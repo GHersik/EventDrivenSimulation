@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameWindow", "GameWindow\GameWindow.csproj", "{55A257EB-EAA2-4AA6-836B-32D975472517}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameWindow", "GameWindow\GameWindow.csproj", "{55A257EB-EAA2-4AA6-836B-32D975472517}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2DPhysicsLibrary", "2DPhysicsLibrary\2DPhysicsLibrary.csproj", "{76E0C078-DE8D-481B-B5D5-14067D286F87}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{55A257EB-EAA2-4AA6-836B-32D975472517}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55A257EB-EAA2-4AA6-836B-32D975472517}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55A257EB-EAA2-4AA6-836B-32D975472517}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76E0C078-DE8D-481B-B5D5-14067D286F87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76E0C078-DE8D-481B-B5D5-14067D286F87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76E0C078-DE8D-481B-B5D5-14067D286F87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76E0C078-DE8D-481B-B5D5-14067D286F87}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

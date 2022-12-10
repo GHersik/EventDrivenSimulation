@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace _2DPhysicsLibrary
+namespace My2DPhysicsLibrary
 {
-    public struct Vector2
+    readonly public struct Vector2
     {
-        public float x;
-        public float y;
+        readonly public float x;
+        readonly public float y;
 
-        public static float one = 1;
+        public static readonly Vector2 One = new Vector2(1.0f, 1.0f);
+        public static readonly Vector2 Zero = new Vector2(0, 0);
 
         public Vector2(float x = 0, float y = 0)
         {

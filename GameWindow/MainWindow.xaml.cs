@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Media.Animation;
+using My2DPhysicsLibrary;
 
 namespace GameWindow
 {
@@ -21,48 +22,59 @@ namespace GameWindow
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Storyboard myStoryboard;
+        Brush customColor;
+        Random r = new Random();
 
         public MainWindow()
         {
             InitializeComponent();
-
-            StackPanel myPanel = new StackPanel();
-            myPanel.Margin = new Thickness(10);
-
-            Rectangle myRectangle = new Rectangle();
-            myRectangle.Name = "myRectangle";
-            this.RegisterName(myRectangle.Name, myRectangle);
-            myRectangle.Width = 100;
-            myRectangle.Height = 100;
-            myRectangle.Fill = Brushes.Blue;
-
-            DoubleAnimation myDoubleAnimation = new DoubleAnimation();
-            myDoubleAnimation.From = 1.0;
-            myDoubleAnimation.To = 0.0;
-            myDoubleAnimation.Duration = new Duration(TimeSpan.FromSeconds(5));
-            myDoubleAnimation.AutoReverse = true;
-            myDoubleAnimation.RepeatBehavior = RepeatBehavior.Forever;
-
-            myStoryboard = new Storyboard();
-            myStoryboard.Children.Add(myDoubleAnimation);
-            Storyboard.SetTargetName(myDoubleAnimation, myRectangle.Name);
-            Storyboard.SetTargetProperty(myDoubleAnimation, new PropertyPath(Rectangle.OpacityProperty));
-
-            // Use the Loaded event to start the Storyboard.
-            myRectangle.Loaded += new RoutedEventHandler(myRectangleLoaded);
-            myPanel.Children.Add(myRectangle);
-            this.Content = myPanel;
+            GameWindowDraw();
         }
 
         private void GameWindowDraw()
         {
 
+
+
+            ////Initialize n particles
+            //Particle[] particles = new Particle[2];
+            //for (int i = 0; i < 2; i++)
+            //{
+            //    particles[0] = new Particle();
+            //}
+
+            //while (true)
+            //{
+
+            //}
         }
 
-        private void myRectangleLoaded(object sender, RoutedEventArgs e)
+        private void AddOrRemoveParticle(object sender, MouseButtonEventArgs e)
         {
-            myStoryboard.Begin(this);
+            if (e.OriginalSource is Ellipse)
+            {
+                Ellipse activeEllipse = (Ellipse)e.OriginalSource;
+
+                Render.Children.Remove(activeEllipse);
+            }
+            else
+            {
+                customColor = new SolidColorBrush(Color.FromRgb((byte)r.Next(1, 255), (byte)r.Next(1, 255), (byte)r.Next(1, 255)));
+
+                Ellipse newEllipse = new Ellipse
+                {
+                    Width = 20,
+                    Height = 20,
+                    Fill = customColor,
+                    StrokeThickness = 1,
+                    Stroke = Brushes.Black
+                };
+
+                Canvas.SetLeft(newEllipse, Mouse.GetPosition(Render).X);
+                Canvas.SetTop(newEllipse, Mouse.GetPosition(Render).Y);
+
+                Render.Children.Add(newEllipse);
+            }
         }
     }
 }

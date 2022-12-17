@@ -29,10 +29,7 @@ namespace GameWindow
         private DispatcherTimer Time = new DispatcherTimer();
         private TimeSpan deltaTime = TimeSpan.FromMilliseconds(20);
 
-        //Particle properties
-        private Brush customColor;
         private readonly Random rnd = new Random();
-
 
         public MainWindow()
         {
@@ -44,17 +41,45 @@ namespace GameWindow
             Time.Interval = deltaTime;
             Time.Start();
 
+            //Spawn given amount at the center
+            foreach (var particle in SpawnParticles(10))
+            {
+                Render.Children.Add(particle);
+            }
         }
 
         private void Update(object sender, EventArgs e)
         {
+
+
+
             foreach (var particle in Render.Children.OfType<Particle>())
             {
                 particle.CollisionDetection(ref Render);
                 particle.Move();
 
-                //Point position = particle.PointToScreen(new Point(0d, 0d));
 
+
+            }
+        }
+
+        IEnumerable<Particle> SpawnParticles(int amountToSpawn)
+        {
+            for (int i = 0; i < amountToSpawn; i++)
+            {
+                Particle newP = new Particle(
+                    new Vector2(Render.Width / 2, Render.Height / 2),
+                    new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()),
+                    10)
+                {
+                    Width = 20,
+                    Height = 20,
+                    Fill = new SolidColorBrush(Color.FromRgb((byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255))),
+                    StrokeThickness = 1,
+                    Stroke = Brushes.Black
+                };
+
+                yield return newP;
             }
         }
 
@@ -68,33 +93,24 @@ namespace GameWindow
             }
             else
             {
-                //Initiliaze particle
-                customColor = new SolidColorBrush(Color.FromRgb((byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255)));
-                //Particle newParticle = new Particle
-                //{
-                //    Width = 20,
-                //    Height = 20,
-                //    Fill = customColor,
-                //    StrokeThickness = 1,
-                //    Stroke = Brushes.Black
-                //};
-
                 //Get the specific position on click
                 Point mousePos = new Point(Mouse.GetPosition(Render).X, Mouse.GetPosition(Render).Y);
-                Particle newP = new Particle(new Vector2(mousePos.X, mousePos.Y), new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()))
+
+                //Initiliaze particle at a given point
+                Particle newParticle = new Particle(
+                    new Vector2(mousePos.X, mousePos.Y),
+                    new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()),
+                    10)
                 {
                     Width = 20,
                     Height = 20,
-                    Fill = customColor,
+                    Fill = new SolidColorBrush(Color.FromRgb((byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255))),
                     StrokeThickness = 1,
                     Stroke = Brushes.Black
                 };
 
-                //Add particle at a specified position on Render
-                //Canvas.SetLeft(newParticle, mousePos.X);
-                //Canvas.SetTop(newParticle, mousePos.Y);
-
-                Render.Children.Add(newP);
+                //Add to canvas
+                Render.Children.Add(newParticle);
             }
         }
     }
@@ -111,21 +127,19 @@ namespace GameWindow
         private Vector2 particleVelocity;
         private double particleRadius;
 
-        public Particle(Vector2 position, Vector2 velocity)
+        public Particle(Vector2 position, Vector2 velocity, double radius)
         {
             //Assign properties
             this.particlePosition = position;
             this.particleVelocity = velocity;
-            this.particleRadius = Width / 2;
+            this.particleRadius = radius;
 
             //Position accordingly
             this.RenderTransform = new TranslateTransform
                 (particlePosition.x, particlePosition.y);
         }
 
-        public Particle() : this(Vector2.Zero, Vector2.One) { }
-
-        //public Particle() : this(Vector2.Zero, Vector2.One, 1) { }
+        public Particle() : this(Vector2.Zero, Vector2.One, 9) { }
 
         protected override Geometry DefiningGeometry
         {
@@ -135,10 +149,9 @@ namespace GameWindow
             }
         }
 
-        //to do
         public void Move()
         {
-            particlePosition.x = particleVelocity.x;
+            particlePosition.x += particleVelocity.x;
             particlePosition.y += particleVelocity.y;
 
             this.RenderTransform = new TranslateTransform
@@ -147,26 +160,11 @@ namespace GameWindow
 
         public void CollisionDetection(ref Canvas Render)
         {
-            //Application.Current.MainWindow.Width = this.Width;
-            if (particlePosition.x + particleRadius > Render.Width || particlePosition.x - particleRadius < 0)
-            {
-                this.Width += 10;
+            if (particlePosition.x + particleRadius > Render.Width || particlePosition.x + particleRadius < 0)
                 particleVelocity.x = (-particleVelocity.x);
-            }
-            if (particlePosition.y + particleRadius > Render.Height || particlePosition.y - particleRadius < 0)
-            {
-                this.Width += 10;
+
+            if (particlePosition.y + particleRadius > Render.Height || particlePosition.y + particleRadius < 0)
                 particleVelocity.y = (-particleVelocity.y);
-            }
-
-
-
-            //if (Canvas.GetTop(this) > Render.MaxWidth)
-            //    particleVelocity.x = (-particleVelocity.x);
-            //if (Canvas.GetLeft(this) > Render.MaxHeight)
-            //    particleVelocity.y = (-particleVelocity.y);
-
-
         }
     }
 

@@ -105,5 +105,19 @@ namespace SimulationWindow
                 Render.Children.Add(newParticle);
             }
         }
+
+        private void TimeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (Time.IsEnabled)
+            {
+                TimeButton.Content = "Start Time";
+                Time.Stop();
+            }
+            else
+            {
+                TimeButton.Content = "Stop Time";
+                Time.Start();
+            }
+        }
     }
 }

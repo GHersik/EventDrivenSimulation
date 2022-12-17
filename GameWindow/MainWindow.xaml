@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SimulationWindow"
         mc:Ignorable="d"
-        Title="Simulation" Height="500" Width="480" ResizeMode="NoResize" Background="BurlyWood">
+        Title="Simulation" Height="540" Width="480" ResizeMode="NoResize" Background="BurlyWood">
     <Canvas Name="Render" Height="400" Width="400" Background="Beige" Focusable="True"
            VerticalAlignment="Center" HorizontalAlignment="Center" MouseLeftButtonDown="AddOrRemoveParticle">
-        <!--<Ellipse Width="20" Height="20" Fill="Black" Canvas.Left="380" Canvas.Top="380" HorizontalAlignment="Left" VerticalAlignment="Top">
-        </Ellipse>-->
+        <TextBlock FontSize="14" FontWeight="DemiBold"   Canvas.Top="-43" TextAlignment="Center" Canvas.Left="58" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Height="40" VerticalAlignment="Top" Width="284">Left mouse click on the inner box to spawn more particles or on the particle to delete it</TextBlock>
+        <Button Click="TimeButton_Click" Name="TimeButton" Canvas.Left="150" Canvas.Top="411" Width="100" Height="22" Background="Goldenrod" BorderBrush="Honeydew" Cursor="Hand" >Stop Time</Button>
     </Canvas>
 </Window>

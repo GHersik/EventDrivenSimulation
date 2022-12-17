@@ -28,14 +28,14 @@ namespace SimulationWindow
     {
         private Vector2 particlePosition;
         private Vector2 particleVelocity;
-        private double particleRadius;
+        private double particleWidth;
 
         public Particle(Vector2 position, Vector2 velocity, double radius)
         {
             //Assign properties
             this.particlePosition = position;
             this.particleVelocity = velocity;
-            this.particleRadius = radius;
+            this.particleWidth = radius;
 
             //Position accordingly
             this.RenderTransform = new TranslateTransform
@@ -63,10 +63,12 @@ namespace SimulationWindow
 
         public void CollisionDetection(ref Canvas Render)
         {
-            if (particlePosition.x + particleRadius > Render.Width || particlePosition.x < 0)
+            //X axis
+            if (particlePosition.x + particleWidth > Render.Width || particlePosition.x < 0)
                 particleVelocity.x = (-particleVelocity.x);
 
-            if (particlePosition.y + particleRadius > Render.Height || particlePosition.y < 0)
+            //Y axis
+            if (particlePosition.y + particleWidth > Render.Height || particlePosition.y < 0)
                 particleVelocity.y = (-particleVelocity.y);
         }
     }

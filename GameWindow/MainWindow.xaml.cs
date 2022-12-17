@@ -15,8 +15,6 @@ using System.Windows.Shapes;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using System.Windows.Ink;
-using My2DPhysicsLibrary;
-//using My2DPhysicsLibrary;
 
 namespace GameWindow
 {
@@ -50,16 +48,10 @@ namespace GameWindow
 
         private void Update(object sender, EventArgs e)
         {
-
-
-
             foreach (var particle in Render.Children.OfType<Particle>())
             {
                 particle.CollisionDetection(ref Render);
                 particle.Move();
-
-
-
             }
         }
 
@@ -70,7 +62,7 @@ namespace GameWindow
                 Particle newP = new Particle(
                     new Vector2(Render.Width / 2, Render.Height / 2),
                     new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()),
-                    10)
+                    20)
                 {
                     Width = 20,
                     Height = 20,
@@ -100,7 +92,7 @@ namespace GameWindow
                 Particle newParticle = new Particle(
                     new Vector2(mousePos.X, mousePos.Y),
                     new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()),
-                    10)
+                    20)
                 {
                     Width = 20,
                     Height = 20,
@@ -112,74 +104,6 @@ namespace GameWindow
                 //Add to canvas
                 Render.Children.Add(newParticle);
             }
-        }
-    }
-
-    /// <summary>
-    /// Initializes an instance of a particle.
-    /// </summary>
-    /// <param name="particlePosition">Position of a particle using x and y axis.</param>
-    /// <param name="particleVelocity">Velocity of a particle using x and y axis.</param>
-    /// <param name="particleRadius">Radius of a particle.</param>
-    public class Particle : Shape
-    {
-        private Vector2 particlePosition;
-        private Vector2 particleVelocity;
-        private double particleRadius;
-
-        public Particle(Vector2 position, Vector2 velocity, double radius)
-        {
-            //Assign properties
-            this.particlePosition = position;
-            this.particleVelocity = velocity;
-            this.particleRadius = radius;
-
-            //Position accordingly
-            this.RenderTransform = new TranslateTransform
-                (particlePosition.x, particlePosition.y);
-        }
-
-        public Particle() : this(Vector2.Zero, Vector2.One, 9) { }
-
-        protected override Geometry DefiningGeometry
-        {
-            get
-            {
-                return new EllipseGeometry(new Rect(0, 0, this.Width - 2, this.Height - 2));
-            }
-        }
-
-        public void Move()
-        {
-            particlePosition.x += particleVelocity.x;
-            particlePosition.y += particleVelocity.y;
-
-            this.RenderTransform = new TranslateTransform
-                (particlePosition.x, particlePosition.y);
-        }
-
-        public void CollisionDetection(ref Canvas Render)
-        {
-            if (particlePosition.x + particleRadius > Render.Width || particlePosition.x + particleRadius < 0)
-                particleVelocity.x = (-particleVelocity.x);
-
-            if (particlePosition.y + particleRadius > Render.Height || particlePosition.y + particleRadius < 0)
-                particleVelocity.y = (-particleVelocity.y);
-        }
-    }
-
-    public struct Vector2
-    {
-        public double x;
-        public double y;
-
-        public static readonly Vector2 One = new Vector2(1.0, 1.0);
-        public static readonly Vector2 Zero = new Vector2(0, 0);
-
-        public Vector2(double x = 0, double y = 0)
-        {
-            this.x = x;
-            this.y = y;
         }
     }
 }

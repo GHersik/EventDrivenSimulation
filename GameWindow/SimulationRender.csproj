@@ -7,8 +7,4 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\2DPhysicsLibrary\My2DPhysicsLibrary.csproj" />
-  </ItemGroup>
-
 </Project>

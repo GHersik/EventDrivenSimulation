@@ -1,7 +1,7 @@
-﻿<Application x:Class="GameWindow.App"
+﻿<Application x:Class="SimulationWindow.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:GameWindow"
+             xmlns:local="clr-namespace:SimulationWindow"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          

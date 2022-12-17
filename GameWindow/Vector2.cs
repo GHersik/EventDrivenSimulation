@@ -16,7 +16,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using System.Windows.Ink;
 
-namespace GameWindow
+namespace SimulationWindow
 {
     /// <summary>
     /// Represents two points x and y as coordinates on a 2D plane.

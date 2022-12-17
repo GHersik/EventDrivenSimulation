@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GameWindow"
         mc:Ignorable="d"
-        Title="Simulation" Height="400" Width="400">
-    <Canvas Name="Render" Height="Auto" Width="Auto" Background="Beige" Focusable="True" MouseLeftButtonDown="AddOrRemoveParticle">
+        Title="Simulation" Height="500" Width="480">
+    <Canvas Name="Render" Height="400" Width="400" Background="Beige" Focusable="True" Margin="20"
+           VerticalAlignment="Center" HorizontalAlignment="Center" MouseLeftButtonDown="AddOrRemoveParticle">
+        <Label Name="Position" Canvas.Left="283" Canvas.Top="-34" Height="26" Width="68" HorizontalAlignment="Left" VerticalAlignment="Top" Content="Position: ">
+        </Label>
     </Canvas>
 </Window>

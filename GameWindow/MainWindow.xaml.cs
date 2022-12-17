@@ -27,7 +27,7 @@ namespace GameWindow
     {
         //SimulationTime
         private DispatcherTimer Time = new DispatcherTimer();
-        private TimeSpan deltaTime = TimeSpan.FromMilliseconds(40);
+        private TimeSpan deltaTime = TimeSpan.FromMilliseconds(20);
 
         //Particle properties
         private Brush customColor;
@@ -36,6 +36,7 @@ namespace GameWindow
 
         public MainWindow()
         {
+            WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
             InitializeComponent();
 
             //Setup simulation
@@ -69,7 +70,18 @@ namespace GameWindow
             {
                 //Initiliaze particle
                 customColor = new SolidColorBrush(Color.FromRgb((byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255)));
-                Particle newParticle = new Particle
+                //Particle newParticle = new Particle
+                //{
+                //    Width = 20,
+                //    Height = 20,
+                //    Fill = customColor,
+                //    StrokeThickness = 1,
+                //    Stroke = Brushes.Black
+                //};
+
+                //Get the specific position on click
+                Point mousePos = new Point(Mouse.GetPosition(Render).X, Mouse.GetPosition(Render).Y);
+                Particle newP = new Particle(new Vector2(mousePos.X, mousePos.Y), new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()))
                 {
                     Width = 20,
                     Height = 20,
@@ -78,13 +90,11 @@ namespace GameWindow
                     Stroke = Brushes.Black
                 };
 
-                //Get position on Render
-                Point mousePos = new Point(Mouse.GetPosition(Render).X, Mouse.GetPosition(Render).Y);
-
                 //Add particle at a specified position on Render
-                Canvas.SetLeft(newParticle, mousePos.X);
-                Canvas.SetTop(newParticle, mousePos.Y);
-                Render.Children.Add(newParticle);
+                //Canvas.SetLeft(newParticle, mousePos.X);
+                //Canvas.SetTop(newParticle, mousePos.Y);
+
+                Render.Children.Add(newP);
             }
         }
     }
@@ -99,20 +109,23 @@ namespace GameWindow
     {
         private Vector2 particlePosition;
         private Vector2 particleVelocity;
-        private float particleRadius;
+        private double particleRadius;
 
-        public Particle(Vector2 position, Vector2 velocity, float radius)
+        public Particle(Vector2 position, Vector2 velocity)
         {
+            //Assign properties
             this.particlePosition = position;
             this.particleVelocity = velocity;
+            this.particleRadius = Width / 2;
 
-            //particlePosition.x = (float)this.PointToScreen(new Point(0d, 0d)).X;
-            //particlePosition.y = (float)this.PointToScreen(new Point(0d, 0d)).Y;
-
-            this.particleRadius = radius;
+            //Position accordingly
+            this.RenderTransform = new TranslateTransform
+                (particlePosition.x, particlePosition.y);
         }
 
-        public Particle() : this(Vector2.Zero, Vector2.One, 1) { }
+        public Particle() : this(Vector2.Zero, Vector2.One) { }
+
+        //public Particle() : this(Vector2.Zero, Vector2.One, 1) { }
 
         protected override Geometry DefiningGeometry
         {
@@ -125,38 +138,47 @@ namespace GameWindow
         //to do
         public void Move()
         {
+            particlePosition.x = particleVelocity.x;
+            particlePosition.y += particleVelocity.y;
+
             this.RenderTransform = new TranslateTransform
-                (particlePosition.x += particleVelocity.x,
-                particlePosition.y += particleVelocity.y);
-
-
-            //this.RenderTransformOrigin = new Point(10, 10);
-            //this.RenderTransform = new RotateTransform(45);
+                (particlePosition.x, particlePosition.y);
         }
 
         public void CollisionDetection(ref Canvas Render)
         {
-            if (Canvas.GetTop(this) > Render.ActualWidth)
+            //Application.Current.MainWindow.Width = this.Width;
+            if (particlePosition.x + particleRadius > Render.Width || particlePosition.x - particleRadius < 0)
+            {
+                this.Width += 10;
                 particleVelocity.x = (-particleVelocity.x);
-            if (Canvas.GetLeft(this) > Render.ActualHeight)
+            }
+            if (particlePosition.y + particleRadius > Render.Height || particlePosition.y - particleRadius < 0)
+            {
+                this.Width += 10;
                 particleVelocity.y = (-particleVelocity.y);
+            }
 
-            //if (Canvas.GetTop(this) > Render.ActualWidth)
+
+
+            //if (Canvas.GetTop(this) > Render.MaxWidth)
             //    particleVelocity.x = (-particleVelocity.x);
-            //if (Canvas.GetLeft(this) > Render.ActualHeight)
+            //if (Canvas.GetLeft(this) > Render.MaxHeight)
             //    particleVelocity.y = (-particleVelocity.y);
+
+
         }
     }
 
     public struct Vector2
     {
-        public float x;
-        public float y;
+        public double x;
+        public double y;
 
-        public static readonly Vector2 One = new Vector2(1.0f, 1.0f);
+        public static readonly Vector2 One = new Vector2(1.0, 1.0);
         public static readonly Vector2 Zero = new Vector2(0, 0);
 
-        public Vector2(float x = 0, float y = 0)
+        public Vector2(double x = 0, double y = 0)
         {
             this.x = x;
             this.y = y;

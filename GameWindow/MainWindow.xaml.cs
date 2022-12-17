@@ -14,6 +14,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using System.Windows.Ink;
+using My2DPhysicsLibrary;
 //using My2DPhysicsLibrary;
 
 namespace GameWindow
@@ -24,56 +26,50 @@ namespace GameWindow
     public partial class MainWindow : Window
     {
         //SimulationTime
-        DispatcherTimer Time = new DispatcherTimer();
-        TimeSpan deltaTime = TimeSpan.FromMilliseconds(20);
+        private DispatcherTimer Time = new DispatcherTimer();
+        private TimeSpan deltaTime = TimeSpan.FromMilliseconds(40);
 
-        Brush customColor;
-        Random rnd = new Random();
+        //Particle properties
+        private Brush customColor;
+        private readonly Random rnd = new Random();
+
 
         public MainWindow()
         {
             InitializeComponent();
 
-            Time.Tick += FixedUpdate;
+            //Setup simulation
+            Time.Tick += Update;
             Time.Interval = deltaTime;
             Time.Start();
 
         }
 
-        private void FixedUpdate(object sender, EventArgs e)
+        private void Update(object sender, EventArgs e)
         {
-            foreach (var particle in Render.Children.OfType<Ellipse>())
+            foreach (var particle in Render.Children.OfType<Particle>())
             {
-                particle.Width += 1;
+                particle.CollisionDetection(ref Render);
+                particle.Move();
+
+                //Point position = particle.PointToScreen(new Point(0d, 0d));
+
             }
-
-
-
-
-            //Render.UpdateLayout();
         }
 
         private void AddOrRemoveParticle(object sender, MouseButtonEventArgs e)
         {
-            if (e.OriginalSource is Ellipse)
+            if (e.OriginalSource is Particle)
             {
-                Ellipse activeEllipse = (Ellipse)e.OriginalSource;
-
-                Render.Children.Remove(activeEllipse);
+                //Remove particle
+                Particle activeParticle = (Particle)e.OriginalSource;
+                Render.Children.Remove(activeParticle);
             }
             else
             {
+                //Initiliaze particle
                 customColor = new SolidColorBrush(Color.FromRgb((byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255)));
-                //Particle newParticle = new Particle
-                //{
-                //    Width = 20,
-                //    Height = 20,
-                //    Fill = customColor,
-                //    StrokeThickness = 1,
-                //    Stroke = Brushes.Black
-                //};
-
-                Ellipse newEllipse = new Ellipse
+                Particle newParticle = new Particle
                 {
                     Width = 20,
                     Height = 20,
@@ -82,11 +78,13 @@ namespace GameWindow
                     Stroke = Brushes.Black
                 };
 
-                Canvas.SetLeft(newEllipse, Mouse.GetPosition(Render).X);
-                Canvas.SetTop(newEllipse, Mouse.GetPosition(Render).Y);
-                Render.Children.Add(newEllipse);
+                //Get position on Render
+                Point mousePos = new Point(Mouse.GetPosition(Render).X, Mouse.GetPosition(Render).Y);
 
-                //todo add velocity etc
+                //Add particle at a specified position on Render
+                Canvas.SetLeft(newParticle, mousePos.X);
+                Canvas.SetTop(newParticle, mousePos.Y);
+                Render.Children.Add(newParticle);
             }
         }
     }
@@ -97,61 +95,63 @@ namespace GameWindow
     /// <param name="particlePosition">Position of a particle using x and y axis.</param>
     /// <param name="particleVelocity">Velocity of a particle using x and y axis.</param>
     /// <param name="particleRadius">Radius of a particle.</param>
-    /// <param name="particleColor">Color of a particle.</param>
     public class Particle : Shape
     {
         private Vector2 particlePosition;
         private Vector2 particleVelocity;
         private float particleRadius;
-        private Color particleColor;
-        private Rect _rect = Rect.Empty;
 
-        public Particle(Vector2 position, Vector2 velocity, float radius, Color color)
+        public Particle(Vector2 position, Vector2 velocity, float radius)
         {
             this.particlePosition = position;
             this.particleVelocity = velocity;
+
+            //particlePosition.x = (float)this.PointToScreen(new Point(0d, 0d)).X;
+            //particlePosition.y = (float)this.PointToScreen(new Point(0d, 0d)).Y;
+
             this.particleRadius = radius;
-            this.particleColor = color;
         }
 
-        public Particle() : this(Vector2.One, Vector2.One, 1, Color.FromRgb((byte)1, (byte)1, (byte)1)) { }
+        public Particle() : this(Vector2.Zero, Vector2.One, 1) { }
 
         protected override Geometry DefiningGeometry
         {
             get
             {
-                if (_rect.IsEmpty)
-                    return Geometry.Empty;
-
-                return new EllipseGeometry(_rect);
+                return new EllipseGeometry(new Rect(0, 0, this.Width - 2, this.Height - 2));
             }
         }
-
-        //protected override void OnRender(DrawingContext drawingContext)
-        //{
-        //    if (!_rect.IsEmpty)
-        //    {
-        //        Pen pen = GetPen();
-        //    }
-        //}
 
         //to do
         public void Move()
         {
-            throw new NotImplementedException();
+            this.RenderTransform = new TranslateTransform
+                (particlePosition.x += particleVelocity.x,
+                particlePosition.y += particleVelocity.y);
+
+
+            //this.RenderTransformOrigin = new Point(10, 10);
+            //this.RenderTransform = new RotateTransform(45);
         }
 
-        //to do
-        public void Draw()
+        public void CollisionDetection(ref Canvas Render)
         {
-            throw new NotImplementedException();
+            if (Canvas.GetTop(this) > Render.ActualWidth)
+                particleVelocity.x = (-particleVelocity.x);
+            if (Canvas.GetLeft(this) > Render.ActualHeight)
+                particleVelocity.y = (-particleVelocity.y);
+
+            //if (Canvas.GetTop(this) > Render.ActualWidth)
+            //    particleVelocity.x = (-particleVelocity.x);
+            //if (Canvas.GetLeft(this) > Render.ActualHeight)
+            //    particleVelocity.y = (-particleVelocity.y);
         }
     }
 
-    readonly public struct Vector2
+    public struct Vector2
     {
-        readonly public float x;
-        readonly public float y;
+        public float x;
+        public float y;
 
         public static readonly Vector2 One = new Vector2(1.0f, 1.0f);
         public static readonly Vector2 Zero = new Vector2(0, 0);

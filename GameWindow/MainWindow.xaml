@@ -10,5 +10,6 @@
            VerticalAlignment="Center" HorizontalAlignment="Center" MouseLeftButtonDown="AddOrRemoveParticle">
         <TextBlock FontSize="14" FontWeight="DemiBold"   Canvas.Top="-43" TextAlignment="Center" Canvas.Left="58" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Height="40" VerticalAlignment="Top" Width="284">Left mouse click on the inner box to spawn more particles or on the particle to delete it</TextBlock>
         <Button Click="TimeButton_Click" Name="TimeButton" Canvas.Left="150" Canvas.Top="411" Width="100" Height="22" Background="Goldenrod" BorderBrush="Honeydew" Cursor="Hand" >Stop Time</Button>
+        <Ellipse Width="20" Height="20" Canvas.Left="380" Canvas.Top="380"  ></Ellipse>
     </Canvas>
 </Window>

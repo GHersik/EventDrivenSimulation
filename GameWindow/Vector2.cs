@@ -36,5 +36,14 @@ namespace SimulationWindow
             this.x = x;
             this.y = y;
         }
+
+        public void Normalize()
+        {
+            double length = Math.Sqrt((this.x * this.x) + (this.y * this.y));
+            this.x /= length;
+            this.y /= length;
+        }
+
+        public static Vector2 operator +(Vector2 a, Vector2 b) => new Vector2(a.x + b.x, a.y + b.y);
     }
 }

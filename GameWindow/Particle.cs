@@ -28,14 +28,15 @@ namespace SimulationWindow
     {
         private Vector2 particlePosition;
         private Vector2 particleVelocity;
-        private double particleWidth;
+        private double particleRadius;
 
         public Particle(Vector2 position, Vector2 velocity, double radius)
         {
             //Assign properties
-            this.particlePosition = position;
+            this.particleRadius = radius;
+            this.particlePosition = new Vector2(position.x - particleRadius, position.y - particleRadius);
             this.particleVelocity = velocity;
-            this.particleWidth = radius;
+
 
             //Position accordingly
             this.RenderTransform = new TranslateTransform
@@ -52,10 +53,9 @@ namespace SimulationWindow
             }
         }
 
-        public void Move()
+        public void Move(double deltaTime)
         {
-            particlePosition.x += particleVelocity.x;
-            particlePosition.y += particleVelocity.y;
+            particlePosition += new Vector2(particleVelocity.x * deltaTime, particleVelocity.y * deltaTime);
 
             this.RenderTransform = new TranslateTransform
                 (particlePosition.x, particlePosition.y);
@@ -63,13 +63,41 @@ namespace SimulationWindow
 
         public void CollisionDetection(ref Canvas Render)
         {
+            //Wall
             //X axis
-            if (particlePosition.x + particleWidth > Render.Width || particlePosition.x < 0)
+            if (particlePosition.x + this.Width > Render.Width || particlePosition.x < 0)
                 particleVelocity.x = (-particleVelocity.x);
 
             //Y axis
-            if (particlePosition.y + particleWidth > Render.Height || particlePosition.y < 0)
+            if (particlePosition.y + this.Width > Render.Height || particlePosition.y < 0)
                 particleVelocity.y = (-particleVelocity.y);
+        }
+
+        public void ParticleCollision(Particle p1, Particle p2)
+        {
+            double radiusSum = p1.particleRadius + p2.particleRadius;
+            double distanceBetween = Math.Sqrt(Math.Pow(p1.particlePosition.x - p2.particlePosition.x, 2)
+                + Math.Pow(p1.particlePosition.y - p2.particlePosition.y, 2));
+
+            if (radiusSum < distanceBetween)
+                return;
+
+            //Angle and offset distance
+            double angle = Math.Atan2(p2.particlePosition.y - p1.particlePosition.y,
+                p2.particlePosition.x - p1.particlePosition.x);
+            double distanceToMove = radiusSum - distanceBetween;
+
+            //Assign distance to move
+            p2.particlePosition.x += Math.Cos(angle) * distanceToMove;
+            p2.particlePosition.y += Math.Cos(angle) * distanceToMove;
+
+            //Move
+            p2.RenderTransform = new TranslateTransform(p2.particlePosition.x, p2.particlePosition.y);
+
+            //Vector perpendicular to (x, y) is (-y, x)
+            Vector2 tangentVector = new Vector2(p2.particlePosition.y - p1.particlePosition.y, -(p2.particlePosition.x - p1.particlePosition.x));
+
+            tangentVector.Normalize();
         }
     }
 }

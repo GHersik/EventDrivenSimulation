@@ -25,8 +25,8 @@ namespace SimulationWindow
     {
         //SimulationTime
         private DispatcherTimer Time = new DispatcherTimer();
-        private static double deltaTime = 0.2;
-        private TimeSpan deltaTimeUpdate = TimeSpan.FromMilliseconds(20);
+        private static double deltaTime = 0.4;
+        private TimeSpan deltaTimeUpdate = TimeSpan.FromMilliseconds(30);
 
         //Particles
         private readonly Random rnd = new Random();
@@ -52,22 +52,20 @@ namespace SimulationWindow
 
         private void Update(object sender, EventArgs e)
         {
+            //Time Driven Simulation O(n^2)
             for (int i = 0; i < particles.Count; i++)
             {
-                particles[i].CollisionDetection(ref Render);
+                particles[i].WallCollision(ref Render);
 
                 for (int j = i; j < particles.Count - 1; j++)
-                    particles[j].ParticleCollision(particles[j], particles[j + 1]);
+                    particles[i].ParticleCollision(particles[i], particles[j + 1]);
 
                 particles[i].Move(deltaTime);
             }
 
 
 
-            //foreach (var particle in Render.Children.OfType<Particle>())
-            //{
 
-            //}
         }
 
         IEnumerable<Particle> SpawnParticles(int amountToSpawn)
@@ -101,7 +99,7 @@ namespace SimulationWindow
             }
             else
             {
-                //Get the specific position on click -10 to center
+                //Get the specific position on click
                 Point mousePos = new Point(Mouse.GetPosition(Render).X, Mouse.GetPosition(Render).Y);
 
                 //Initiliaze particle at a given point
@@ -117,10 +115,9 @@ namespace SimulationWindow
                     Stroke = Brushes.Black
                 };
 
-
                 //Add to Render
-                Render.Children.Add(newParticle);
                 particles.Add(newParticle);
+                Render.Children.Add(newParticle);
             }
         }
 

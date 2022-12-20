@@ -37,13 +37,29 @@ namespace SimulationWindow
             this.y = y;
         }
 
+        /// <summary>
+        /// Makes this vector have a magnitude of 1 which makes its length 1 as well.
+        /// If the vector is too small it will be set to 0.
+        /// </summary>
         public void Normalize()
         {
-            double length = Math.Sqrt((this.x * this.x) + (this.y * this.y));
-            this.x /= length;
-            this.y /= length;
+            double magnitude = Math.Sqrt((this.x * this.x) + (this.y * this.y));
+            if (magnitude == 0)
+            {
+                this = Vector2.Zero;
+                return;
+            }
+
+            this.x /= magnitude;
+            this.y /= magnitude;
         }
 
+        /// <summary>
+        /// Adds two vectors to each other.
+        /// </summary>
+        /// <param name="a">Vector2 to add to.</param>
+        /// <param name="b">Vector2 being added.</param>
+        /// <returns>New Vector2 as a result of adding x and y axis of one Vector2 to another.</returns>
         public static Vector2 operator +(Vector2 a, Vector2 b) => new Vector2(a.x + b.x, a.y + b.y);
     }
 }

@@ -37,7 +37,6 @@ namespace SimulationWindow
             this.particlePosition = new Vector2(position.x - particleRadius, position.y - particleRadius);
             this.particleVelocity = velocity;
 
-
             //Position accordingly
             this.RenderTransform = new TranslateTransform
                 (particlePosition.x, particlePosition.y);
@@ -57,11 +56,11 @@ namespace SimulationWindow
         {
             particlePosition += new Vector2(particleVelocity.x * deltaTime, particleVelocity.y * deltaTime);
 
-            this.RenderTransform = new TranslateTransform
+            RenderTransform = new TranslateTransform
                 (particlePosition.x, particlePosition.y);
         }
 
-        public void CollisionDetection(ref Canvas Render)
+        public void WallCollision(ref Canvas Render)
         {
             //Wall
             //X axis
@@ -73,19 +72,20 @@ namespace SimulationWindow
                 particleVelocity.y = (-particleVelocity.y);
         }
 
-        public void ParticleCollision(Particle p1, Particle p2)
+        public bool ParticleCollision(Particle p1, Particle p2)
         {
             double radiusSum = p1.particleRadius + p2.particleRadius;
-            double distanceBetween = Math.Sqrt(Math.Pow(p1.particlePosition.x - p2.particlePosition.x, 2)
-                + Math.Pow(p1.particlePosition.y - p2.particlePosition.y, 2));
+            double distanceBetween = ((p1.particlePosition.x - p2.particlePosition.x) * (p1.particlePosition.x - p2.particlePosition.x))
+                + ((p1.particlePosition.y - p2.particlePosition.y) * (p1.particlePosition.y - p2.particlePosition.y));
 
-            if (radiusSum < distanceBetween)
-                return;
+            if (radiusSum * radiusSum < distanceBetween)
+                return false;
 
+            //On collision calculate
             //Angle and offset distance
             double angle = Math.Atan2(p2.particlePosition.y - p1.particlePosition.y,
                 p2.particlePosition.x - p1.particlePosition.x);
-            double distanceToMove = radiusSum - distanceBetween;
+            double distanceToMove = radiusSum - Math.Sqrt(distanceBetween);
 
             //Assign distance to move
             p2.particlePosition.x += Math.Cos(angle) * distanceToMove;
@@ -94,10 +94,21 @@ namespace SimulationWindow
             //Move
             p2.RenderTransform = new TranslateTransform(p2.particlePosition.x, p2.particlePosition.y);
 
-            //Vector perpendicular to (x, y) is (-y, x)
-            Vector2 tangentVector = new Vector2(p2.particlePosition.y - p1.particlePosition.y, -(p2.particlePosition.x - p1.particlePosition.x));
+            //To replace?
+            //p1.particlePosition.x -= Math.Cos(angle) * distanceToMove;
+            //p1.particlePosition.y -= Math.Cos(angle) * distanceToMove;
 
-            tangentVector.Normalize();
+            ////Move
+            //p1.RenderTransform = new TranslateTransform(p1.particlePosition.x, p1.particlePosition.y);
+
+            //Vector perpendicular to (x, y) is (-y, x)
+            Vector2 tangentVector = new Vector2(
+                (p2.particlePosition.y - p1.particlePosition.y),
+                -(p2.particlePosition.x - p1.particlePosition.x));
+
+            ////tangentVector.Normalize();
+
+            return true;
         }
     }
 }

@@ -55,11 +55,35 @@ namespace SimulationWindow
         }
 
         /// <summary>
+        /// Returns the scalar of a dot product between the two vectors.
+        /// </summary>
+        /// <param name="a">Vector a</param>
+        /// <param name="b">Vector b</param>
+        /// <returns></returns>
+        public static double Dot(Vector2 a, Vector2 b) => (a.x * b.x) + (a.y * b.y);
+
+        /// <summary>
         /// Adds two vectors to each other.
         /// </summary>
         /// <param name="a">Vector2 to add to.</param>
         /// <param name="b">Vector2 being added.</param>
         /// <returns>New Vector2 as a result of adding x and y axis of one Vector2 to another.</returns>
         public static Vector2 operator +(Vector2 a, Vector2 b) => new Vector2(a.x + b.x, a.y + b.y);
+
+        /// <summary>
+        /// Subtracts two vectors from each one another.
+        /// </summary>
+        /// <param name="a">Vector to subtract from.</param>
+        /// <param name="b">Vector being subtracted by.</param>
+        /// <returns></returns>
+        public static Vector2 operator -(Vector2 a, Vector2 b) => new Vector2(a.x - b.x, a.y - b.y);
+
+        /// <summary>
+        /// Multiplies given vector by a given scalar.
+        /// </summary>
+        /// <param name="vectorToMultiply"></param>
+        /// <param name="scalar"></param>
+        /// <returns></returns>
+        public static Vector2 operator *(Vector2 vectorToMultiply, double scalar) => new Vector2(vectorToMultiply.x * scalar, vectorToMultiply.y * scalar);
     }
 }

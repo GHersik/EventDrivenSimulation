@@ -75,7 +75,7 @@ namespace SimulationWindow
                 Particle newParticle = new Particle(
                     new Vector2(Render.Width / 2, Render.Height / 2),
                     new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()),
-                    10)
+                    10, 1)
                 {
                     Width = 20,
                     Height = 20,
@@ -99,6 +99,7 @@ namespace SimulationWindow
             }
             else
             {
+                //Add particle
                 //Get the specific position on click
                 Point mousePos = new Point(Mouse.GetPosition(Render).X, Mouse.GetPosition(Render).Y);
 
@@ -106,7 +107,7 @@ namespace SimulationWindow
                 Particle newParticle = new Particle(
                     new Vector2(mousePos.X, mousePos.Y),
                     new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()),
-                    10)
+                    10, 1)
                 {
                     Width = 20,
                     Height = 20,

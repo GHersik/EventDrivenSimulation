@@ -29,20 +29,22 @@ namespace SimulationWindow
         private Vector2 particlePosition;
         private Vector2 particleVelocity;
         private double particleRadius;
+        private double particleMass;
 
-        public Particle(Vector2 position, Vector2 velocity, double radius)
+        public Particle(Vector2 position, Vector2 velocity, double radius, double mass)
         {
             //Assign properties
             this.particleRadius = radius;
             this.particlePosition = new Vector2(position.x - particleRadius, position.y - particleRadius);
             this.particleVelocity = velocity;
+            this.particleMass = mass;
 
             //Position accordingly
             this.RenderTransform = new TranslateTransform
                 (particlePosition.x, particlePosition.y);
         }
 
-        public Particle() : this(Vector2.Zero, Vector2.One, 9) { }
+        public Particle() : this(Vector2.Zero, Vector2.One, 9, 1) { }
 
         protected override Geometry DefiningGeometry
         {
@@ -55,8 +57,7 @@ namespace SimulationWindow
         public void Move(double deltaTime)
         {
             particlePosition += new Vector2(particleVelocity.x * deltaTime, particleVelocity.y * deltaTime);
-
-            RenderTransform = new TranslateTransform
+            this.RenderTransform = new TranslateTransform
                 (particlePosition.x, particlePosition.y);
         }
 
@@ -75,6 +76,7 @@ namespace SimulationWindow
         public bool ParticleCollision(Particle p1, Particle p2)
         {
             double radiusSum = p1.particleRadius + p2.particleRadius;
+            //No Sqrt
             double distanceBetween = ((p1.particlePosition.x - p2.particlePosition.x) * (p1.particlePosition.x - p2.particlePosition.x))
                 + ((p1.particlePosition.y - p2.particlePosition.y) * (p1.particlePosition.y - p2.particlePosition.y));
 
@@ -94,19 +96,26 @@ namespace SimulationWindow
             //Move
             p2.RenderTransform = new TranslateTransform(p2.particlePosition.x, p2.particlePosition.y);
 
-            //To replace?
-            //p1.particlePosition.x -= Math.Cos(angle) * distanceToMove;
-            //p1.particlePosition.y -= Math.Cos(angle) * distanceToMove;
-
-            ////Move
-            //p1.RenderTransform = new TranslateTransform(p1.particlePosition.x, p1.particlePosition.y);
-
+            //Linear algebra
             //Vector perpendicular to (x, y) is (-y, x)
-            Vector2 tangentVector = new Vector2(
-                (p2.particlePosition.y - p1.particlePosition.y),
-                -(p2.particlePosition.x - p1.particlePosition.x));
+            Vector2 tangentVector = new Vector2(-(p2.particlePosition.y - p1.particlePosition.y),
+                (p2.particlePosition.x - p1.particlePosition.x));
+            tangentVector.Normalize();
 
-            ////tangentVector.Normalize();
+            Vector2 relativeVelocity = new Vector2(p2.particleVelocity.x - p1.particleVelocity.x,
+                p2.particleVelocity.y - p1.particleVelocity.y);
+            double length = Vector2.Dot(tangentVector, relativeVelocity);
+
+            Vector2 velocityComponentOnTangent = tangentVector * length;
+            Vector2 velocityComponentPerpendicularToTangent = relativeVelocity - velocityComponentOnTangent;
+
+            p2.particleVelocity.x = (-velocityComponentPerpendicularToTangent.x);
+            p2.particleVelocity.y = (-velocityComponentPerpendicularToTangent.y);
+            p1.particleVelocity = velocityComponentPerpendicularToTangent;
+
+
+            //Newton's second law
+
 
             return true;
         }

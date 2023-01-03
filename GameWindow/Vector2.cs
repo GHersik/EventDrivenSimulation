@@ -79,11 +79,19 @@ namespace SimulationWindow
         public static Vector2 operator -(Vector2 a, Vector2 b) => new Vector2(a.x - b.x, a.y - b.y);
 
         /// <summary>
-        /// Multiplies given vector by a given scalar.
+        /// Multiplies given vector by a specific scalar.
         /// </summary>
         /// <param name="vectorToMultiply"></param>
         /// <param name="scalar"></param>
-        /// <returns></returns>
+        /// <returns>Vector2 multiplied by a specified scalar</returns>
         public static Vector2 operator *(Vector2 vectorToMultiply, double scalar) => new Vector2(vectorToMultiply.x * scalar, vectorToMultiply.y * scalar);
+
+        /// <summary>
+        /// Divides given vector by a specific scalar.
+        /// </summary>
+        /// <param name="vectorToDivide"></param>
+        /// <param name="scalar"></param>
+        /// <returns></returns>
+        public static Vector2 operator /(Vector2 vectorToMultiply, double scalar) => new Vector2(vectorToMultiply.x / scalar, vectorToMultiply.y / scalar);
     }
 }

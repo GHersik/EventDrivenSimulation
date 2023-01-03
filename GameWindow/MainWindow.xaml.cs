@@ -25,8 +25,8 @@ namespace SimulationWindow
     {
         //SimulationTime
         private DispatcherTimer Time = new DispatcherTimer();
-        private static double deltaTime = 0.4;
-        private TimeSpan deltaTimeUpdate = TimeSpan.FromMilliseconds(30);
+        private static double deltaTime = 0.15;
+        private TimeSpan deltaTimeUpdate = TimeSpan.FromMilliseconds(15);
 
         //Particles
         private readonly Random rnd = new Random();

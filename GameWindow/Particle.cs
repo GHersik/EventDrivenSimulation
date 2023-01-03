@@ -26,22 +26,22 @@ namespace SimulationWindow
     /// <param name="particleRadius">Radius of a particle.</param>
     public class Particle : Shape
     {
-        private Vector2 particlePosition;
-        private Vector2 particleVelocity;
-        private double particleRadius;
-        private double particleMass;
+        private Vector2 position;
+        private Vector2 velocity;
+        private double radius;
+        private double mass;
 
         public Particle(Vector2 position, Vector2 velocity, double radius, double mass)
         {
             //Assign properties
-            this.particleRadius = radius;
-            this.particlePosition = new Vector2(position.x - particleRadius, position.y - particleRadius);
-            this.particleVelocity = velocity;
-            this.particleMass = mass;
+            this.radius = radius;
+            this.position = new Vector2(position.x - this.radius, position.y - this.radius);
+            this.velocity = velocity;
+            this.mass = mass;
 
             //Position accordingly
             this.RenderTransform = new TranslateTransform
-                (particlePosition.x, particlePosition.y);
+                (this.position.x, this.position.y);
         }
 
         public Particle() : this(Vector2.Zero, Vector2.One, 9, 1) { }
@@ -56,66 +56,62 @@ namespace SimulationWindow
 
         public void Move(double deltaTime)
         {
-            particlePosition += new Vector2(particleVelocity.x * deltaTime, particleVelocity.y * deltaTime);
+            position += new Vector2(velocity.x * deltaTime, velocity.y * deltaTime);
             this.RenderTransform = new TranslateTransform
-                (particlePosition.x, particlePosition.y);
+                (position.x, position.y);
         }
 
         public void WallCollision(ref Canvas Render)
         {
             //Wall
             //X axis
-            if (particlePosition.x + this.Width > Render.Width || particlePosition.x < 0)
-                particleVelocity.x = (-particleVelocity.x);
+            if (position.x + this.Width > Render.Width || position.x < 0)
+                velocity.x = (-velocity.x);
 
             //Y axis
-            if (particlePosition.y + this.Width > Render.Height || particlePosition.y < 0)
-                particleVelocity.y = (-particleVelocity.y);
+            if (position.y + this.Width > Render.Height || position.y < 0)
+                velocity.y = (-velocity.y);
         }
 
         public bool ParticleCollision(Particle p1, Particle p2)
         {
-            double radiusSum = p1.particleRadius + p2.particleRadius;
             //No Sqrt
-            double distanceBetween = ((p1.particlePosition.x - p2.particlePosition.x) * (p1.particlePosition.x - p2.particlePosition.x))
-                + ((p1.particlePosition.y - p2.particlePosition.y) * (p1.particlePosition.y - p2.particlePosition.y));
+            double distanceBetween = ((p1.position.x - p2.position.x) * (p1.position.x - p2.position.x))
+                + ((p1.position.y - p2.position.y) * (p1.position.y - p2.position.y));
+            double radiusSum = p1.radius + p2.radius;
 
-            if (radiusSum * radiusSum < distanceBetween)
+            if (radiusSum * radiusSum <= distanceBetween)
                 return false;
 
             //On collision calculate
+            distanceBetween = Math.Sqrt(distanceBetween);
+
             //Angle and offset distance
-            double angle = Math.Atan2(p2.particlePosition.y - p1.particlePosition.y,
-                p2.particlePosition.x - p1.particlePosition.x);
-            double distanceToMove = radiusSum - Math.Sqrt(distanceBetween);
+            double angle = Math.Atan2(p2.position.y - p1.position.y,
+                p2.position.x - p1.position.x);
+            double distanceToMove = (radiusSum - distanceBetween) / 2;
 
             //Assign distance to move
-            p2.particlePosition.x += Math.Cos(angle) * distanceToMove;
-            p2.particlePosition.y += Math.Cos(angle) * distanceToMove;
+            p2.position.x += Math.Cos(angle) * distanceToMove;
+            p2.position.y += Math.Cos(angle) * distanceToMove;
+            p1.position.x -= Math.Cos(angle) * distanceToMove;
+            p1.position.y -= Math.Cos(angle) * distanceToMove;
 
-            //Move
-            p2.RenderTransform = new TranslateTransform(p2.particlePosition.x, p2.particlePosition.y);
+            //Move accordingly to remove the offset
+            p2.RenderTransform = new TranslateTransform(p2.position.x, p2.position.y);
+            p1.RenderTransform = new TranslateTransform(p1.position.x, p1.position.y);
 
-            //Linear algebra
-            //Vector perpendicular to (x, y) is (-y, x)
-            Vector2 tangentVector = new Vector2(-(p2.particlePosition.y - p1.particlePosition.y),
-                (p2.particlePosition.x - p1.particlePosition.x));
-            tangentVector.Normalize();
+            //Calculate Impulse
+            distanceBetween = radiusSum;
+            Vector2 tangent = new Vector2(p2.position.x - p1.position.x, p2.position.y - p1.position.y);
+            Vector2 relativeVelocity = new Vector2(p2.velocity.x - p1.velocity.x, p2.velocity.y - p1.velocity.y);
 
-            Vector2 relativeVelocity = new Vector2(p2.particleVelocity.x - p1.particleVelocity.x,
-                p2.particleVelocity.y - p1.particleVelocity.y);
-            double length = Vector2.Dot(tangentVector, relativeVelocity);
+            double impulse = (2 * p1.mass * p2.mass * (Vector2.Dot(tangent, relativeVelocity))) / ((p1.mass + p2.mass) * distanceBetween);
+            Vector2 impulseVector = new Vector2(impulse * tangent.x, impulse * tangent.y) / distanceBetween;
 
-            Vector2 velocityComponentOnTangent = tangentVector * length;
-            Vector2 velocityComponentPerpendicularToTangent = relativeVelocity - velocityComponentOnTangent;
-
-            p2.particleVelocity.x = (-velocityComponentPerpendicularToTangent.x);
-            p2.particleVelocity.y = (-velocityComponentPerpendicularToTangent.y);
-            p1.particleVelocity = velocityComponentPerpendicularToTangent;
-
-
-            //Newton's second law
-
+            //Assign velocity Newton's Second Law
+            p1.velocity += impulseVector / p1.mass;
+            p2.velocity -= impulseVector / p2.mass;
 
             return true;
         }

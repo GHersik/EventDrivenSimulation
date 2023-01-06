@@ -32,6 +32,8 @@ namespace SimulationWindow
         private double radius;
         private double mass;
 
+        private readonly Random rnd = new Random();
+
         public Particle(Vector2 position, Vector2 velocity, double radius, double mass)
         {
             //Assign properties
@@ -39,6 +41,12 @@ namespace SimulationWindow
             this.position = position;
             this.velocity = velocity;
             this.mass = mass;
+
+            this.Width = radius + radius;
+            this.Height = radius + radius;
+            StrokeThickness = 1;
+            Stroke = Brushes.Black;
+            Fill = new SolidColorBrush(Color.FromRgb((byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255)));
 
             //Position accordingly
             this.RenderTransform = new TranslateTransform
@@ -55,6 +63,13 @@ namespace SimulationWindow
             }
         }
 
+        //public void Drag(Vector2 positionToPlace)
+        //{
+        //    position = positionToPlace;
+        //    this.RenderTransform = new TranslateTransform
+        //        (position.x - radius, position.y - radius);
+        //}
+
         public void Move(double deltaTime)
         {
             position += velocity * deltaTime;
@@ -66,19 +81,16 @@ namespace SimulationWindow
         {
             //Wall
             //X axis
-            if (position.x + this.Width > Render.Width || position.x < 0)
+            if (position.x + radius > Render.Width || position.x - radius < 0)
                 velocity.x = (-velocity.x);
 
             //Y axis
-            if (position.y + this.Width > Render.Height || position.y < 0)
+            if (position.y + radius > Render.Height || position.y - radius < 0)
                 velocity.y = (-velocity.y);
         }
 
         public bool ParticleCollision(Particle p1, Particle p2)
         {
-            double relativePosx = (p1.position.x + p1.radius) - (p2.position.x + p2.radius);
-            double relativePosy = (p1.position.y + p1.radius) - (p2.position.y + p2.radius);
-
             //No Sqrt
             double distanceBetween = ((p1.position.x - p2.position.x) * (p1.position.x - p2.position.x))
                 + ((p1.position.y - p2.position.y) * (p1.position.y - p2.position.y));

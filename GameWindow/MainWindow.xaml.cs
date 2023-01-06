@@ -43,11 +43,11 @@ namespace SimulationWindow
             Time.Start();
 
             //Spawn given amount at the center
-            //foreach (var particle in SpawnParticles(10))
-            //{
-            //    Render.Children.Add(particle);
-            //    particles.Add(particle);
-            //}
+            foreach (var particle in SpawnParticles(1))
+            {
+                Render.Children.Add(particle);
+                particles.Add(particle);
+            }
         }
 
         private void Update(object sender, EventArgs e)
@@ -75,10 +75,10 @@ namespace SimulationWindow
                 Particle newParticle = new Particle(
                     new Vector2(Render.Width / 2, Render.Height / 2),
                     new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()),
-                    10, 1)
+                    16, 12)
                 {
-                    Width = 20,
-                    Height = 20,
+                    Width = 32,
+                    Height = 32,
                     Fill = new SolidColorBrush(Color.FromRgb((byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255))),
                     StrokeThickness = 1,
                     Stroke = Brushes.Black
@@ -101,16 +101,12 @@ namespace SimulationWindow
             {
                 //Add particle
                 //Get the specific position on click
-                Point mousePos = new Point(Mouse.GetPosition(Render).X, Mouse.GetPosition(Render).Y);
-
                 //Initiliaze particle at a given point
-                Particle newParticle = new Particle(
-                    new Vector2(mousePos.X, mousePos.Y),
-                    new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()),
-                    10, 1)
+                Particle newParticle = new Particle(new Vector2(Mouse.GetPosition(Render).X, Mouse.GetPosition(Render).Y),
+                    new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()), 6, 1)
                 {
-                    Width = 20,
-                    Height = 20,
+                    Width = 12,
+                    Height = 12,
                     Fill = new SolidColorBrush(Color.FromRgb((byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255))),
                     StrokeThickness = 1,
                     Stroke = Brushes.Black

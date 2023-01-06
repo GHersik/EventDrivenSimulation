@@ -21,9 +21,10 @@ namespace SimulationWindow
     /// <summary>
     /// Initializes an instance of a particle.
     /// </summary>
-    /// <param name="particlePosition">Position of a particle using x and y axis.</param>
-    /// <param name="particleVelocity">Velocity of a particle using x and y axis.</param>
-    /// <param name="particleRadius">Radius of a particle.</param>
+    /// <param name="position">Position of a particle using x and y axis.</param>
+    /// <param name="velocity">Velocity of a particle using x and y axis.</param>
+    /// <param name="radius">Radius of a particle.</param>
+    /// <param name="mass">Mass of a particle.</param>
     public class Particle : Shape
     {
         private Vector2 position;
@@ -35,13 +36,13 @@ namespace SimulationWindow
         {
             //Assign properties
             this.radius = radius;
-            this.position = new Vector2(position.x - this.radius, position.y - this.radius);
+            this.position = position;
             this.velocity = velocity;
             this.mass = mass;
 
             //Position accordingly
             this.RenderTransform = new TranslateTransform
-                (this.position.x, this.position.y);
+                (this.position.x - radius, this.position.y - radius);
         }
 
         public Particle() : this(Vector2.Zero, Vector2.One, 9, 1) { }
@@ -56,9 +57,9 @@ namespace SimulationWindow
 
         public void Move(double deltaTime)
         {
-            position += new Vector2(velocity.x * deltaTime, velocity.y * deltaTime);
+            position += velocity * deltaTime;
             this.RenderTransform = new TranslateTransform
-                (position.x, position.y);
+                (position.x - radius, position.y - radius);
         }
 
         public void WallCollision(ref Canvas Render)
@@ -75,6 +76,9 @@ namespace SimulationWindow
 
         public bool ParticleCollision(Particle p1, Particle p2)
         {
+            double relativePosx = (p1.position.x + p1.radius) - (p2.position.x + p2.radius);
+            double relativePosy = (p1.position.y + p1.radius) - (p2.position.y + p2.radius);
+
             //No Sqrt
             double distanceBetween = ((p1.position.x - p2.position.x) * (p1.position.x - p2.position.x))
                 + ((p1.position.y - p2.position.y) * (p1.position.y - p2.position.y));
@@ -87,8 +91,7 @@ namespace SimulationWindow
             distanceBetween = Math.Sqrt(distanceBetween);
 
             //Angle and offset distance
-            double angle = Math.Atan2(p2.position.y - p1.position.y,
-                p2.position.x - p1.position.x);
+            double angle = Math.Atan2(p2.position.y - p1.position.y, p2.position.x - p1.position.x);
             double distanceToMove = (radiusSum - distanceBetween) / 2;
 
             //Assign distance to move
@@ -109,9 +112,9 @@ namespace SimulationWindow
             double impulse = (2 * p1.mass * p2.mass * (Vector2.Dot(tangent, relativeVelocity))) / ((p1.mass + p2.mass) * distanceBetween);
             Vector2 impulseVector = new Vector2(impulse * tangent.x, impulse * tangent.y) / distanceBetween;
 
-            //Assign velocity Newton's Second Law
-            p1.velocity += impulseVector / p1.mass;
-            p2.velocity -= impulseVector / p2.mass;
+            //Assign velocity, Newton's Second Law
+            p1.velocity += (impulseVector / p1.mass);
+            p2.velocity -= (impulseVector / p2.mass);
 
             return true;
         }

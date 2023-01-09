@@ -27,10 +27,8 @@ namespace SimulationWindow
     /// <param name="mass">Mass of a particle.</param>
     public class Particle : Shape
     {
-        private Vector2 position;
-        private Vector2 velocity;
-        private double radius;
-        private double mass;
+        private Vector2 position, velocity;
+        private double radius, mass;
 
         private readonly Random rnd = new Random();
 
@@ -53,7 +51,7 @@ namespace SimulationWindow
                 (this.position.x - radius, this.position.y - radius);
         }
 
-        public Particle() : this(Vector2.Zero, Vector2.One, 9, 1) { }
+        public Particle() : this(Vector2.Zero, Vector2.One, 8, 1) { }
 
         protected override Geometry DefiningGeometry
         {
@@ -70,16 +68,12 @@ namespace SimulationWindow
         //        (position.x - radius, position.y - radius);
         //}
 
-        public void Move(double deltaTime)
-        {
-            position += velocity * deltaTime;
-            this.RenderTransform = new TranslateTransform
-                (position.x - radius, position.y - radius);
-        }
+        public void Move(double deltaTime) => position += velocity * deltaTime;
+
+        public void Draw() => this.RenderTransform = new TranslateTransform(position.x - radius, position.y - radius);
 
         public void WallCollision(ref Canvas Render)
         {
-            //Wall
             //X axis
             if (position.x + radius > Render.Width || position.x - radius < 0)
                 velocity.x = (-velocity.x);

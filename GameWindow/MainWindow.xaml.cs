@@ -16,6 +16,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using System.Windows.Ink;
 using System.Threading;
+using SimulationRender;
 
 namespace SimulationWindow
 {
@@ -25,14 +26,17 @@ namespace SimulationWindow
     public partial class MainWindow : Window
     {
         //SimulationTime
-        private DispatcherTimer Time = new DispatcherTimer();
-        private static double deltaTime = 0.15;
-        private TimeSpan fixedTime = TimeSpan.FromMilliseconds(15);
+        private readonly DispatcherTimer Time = new DispatcherTimer();
+        private static double deltaTime = 0.10;
+        private TimeSpan fixedTime = TimeSpan.FromMilliseconds(20);
         private TimeSpan time = TimeSpan.Zero;
 
         //Particles
         private List<Particle> particles = new List<Particle>();
         private readonly Random rnd = new Random();
+
+        //Collision prediction
+        private PriorityQueue<Event, double> collisionQueue;
 
         public MainWindow()
         {
@@ -44,7 +48,7 @@ namespace SimulationWindow
             Time.Interval = fixedTime;
             Time.Start();
 
-            //Spawn particles
+            //Spawn big particles
             foreach (var particle in SpawnParticles(1, 52, 16, new Vector2(50, 50), TimeSpan.Zero))
             {
                 Render.Children.Add(particle);
@@ -65,6 +69,7 @@ namespace SimulationWindow
                     particles[i].ParticleCollision(particles[i], particles[j + 1]);
 
                 particles[i].Move(deltaTime);
+                particles[i].Draw();
             }
         }
 
@@ -74,11 +79,10 @@ namespace SimulationWindow
             {
                 TimeSpan timeBetween = time + interval;
 
-                Particle newParticle = new Particle(position, new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()), size / 2, mass)
-                { Fill = new SolidColorBrush(Color.FromRgb((byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255))) };
-
                 if (timeBetween == time)
-                    yield return newParticle;
+                    yield return new Particle(position,
+                    new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()),
+                    size / 2, mass);
             }
         }
 
@@ -96,8 +100,7 @@ namespace SimulationWindow
                 //Add particle
                 //Initiliaze particle at a given point
                 Particle newParticle = new Particle(new Vector2(Mouse.GetPosition(Render).X, Mouse.GetPosition(Render).Y),
-                    new Vector2(rnd.Next(-20, 20) * rnd.NextDouble(), rnd.Next(-20, 20) * rnd.NextDouble()), 6, 1)
-                { Fill = new SolidColorBrush(Color.FromRgb((byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255))), };
+                    new Vector2(rnd.Next(-20, 20) * rnd.NextDouble(), rnd.Next(-20, 20) * rnd.NextDouble()), 4, 1);
 
                 //Add to Render
                 particles.Add(newParticle);
@@ -121,7 +124,7 @@ namespace SimulationWindow
 
         private void DragParticle(object sender, MouseButtonEventArgs e)
         {
-            foreach (var particle in SpawnParticles(10, 12, 1, new Vector2(Mouse.GetPosition(Render).X, Mouse.GetPosition(Render).Y), TimeSpan.Zero))
+            foreach (var particle in SpawnParticles(10, 8, 1, new Vector2(Mouse.GetPosition(Render).X, Mouse.GetPosition(Render).Y), TimeSpan.Zero))
             {
                 Render.Children.Add(particle);
                 particles.Add(particle);

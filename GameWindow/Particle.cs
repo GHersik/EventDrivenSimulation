@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using System.Windows.Ink;
+using System.Reflection;
 
 namespace SimulationWindow
 {
@@ -30,7 +31,9 @@ namespace SimulationWindow
         private Vector2 position, velocity;
         private double radius, mass;
 
-        private readonly Random rnd = new Random();
+        private static readonly Random rnd = new Random();
+
+        #region Constructors
 
         public Particle(Vector2 position, Vector2 velocity, double radius, double mass)
         {
@@ -53,6 +56,8 @@ namespace SimulationWindow
 
         public Particle() : this(Vector2.Zero, Vector2.One, 8, 1) { }
 
+        #endregion
+
         protected override Geometry DefiningGeometry
         {
             get
@@ -61,23 +66,20 @@ namespace SimulationWindow
             }
         }
 
-        //public void Drag(Vector2 positionToPlace)
-        //{
-        //    position = positionToPlace;
-        //    this.RenderTransform = new TranslateTransform
-        //        (position.x - radius, position.y - radius);
-        //}
-
         public void Move(double deltaTime) => position += velocity * deltaTime;
 
         public void Draw() => this.RenderTransform = new TranslateTransform(position.x - radius, position.y - radius);
 
-        public void WallCollision(ref Canvas Render)
+        #region Collisions Calculations
+        public void VerticalWallCollision(ref Canvas Render)
         {
             //X axis
             if (position.x + radius > Render.Width || position.x - radius < 0)
                 velocity.x = (-velocity.x);
+        }
 
+        public void HorizontalWallCollision(ref Canvas Render)
+        {
             //Y axis
             if (position.y + radius > Render.Height || position.y - radius < 0)
                 velocity.y = (-velocity.y);
@@ -124,5 +126,40 @@ namespace SimulationWindow
 
             return true;
         }
+
+        #endregion
+
+        #region Collision Prediction Methods
+
+        public double timeToHitParticle(Particle p1)
+        {
+
+
+            return 0;
+        }
+
+        public double timeToHitVerticalWall(ref Canvas Render)
+        {
+            if (velocity.x == 0)
+                return double.PositiveInfinity;
+
+            if (this.velocity.x > 0)
+                return (Render.Width - this.position.x - this.radius) / this.velocity.x;
+
+            return Math.Abs((this.position.x - this.radius) / this.velocity.x);
+        }
+
+        public double timeToHitHorizontalWall(ref Canvas Render)
+        {
+            if (velocity.y == 0)
+                return double.PositiveInfinity;
+
+            if (this.velocity.y > 0)
+                return (Render.Width - this.position.y - this.radius) / this.velocity.y;
+
+            return Math.Abs((this.position.y - this.radius) / this.velocity.y);
+        }
+
+        #endregion
     }
 }

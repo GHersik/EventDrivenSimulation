@@ -36,7 +36,19 @@ namespace SimulationWindow
         private readonly Random rnd = new Random();
 
         //Collision prediction
-        private PriorityQueue<Event, double> collisionQueue;
+        private PriorityQueue<Event, double> collisionQueue = new PriorityQueue<Event, double> { };
+
+        private void PredictCollisions(Particle p1)
+        {
+            if (p1 == null) return;
+
+            for (int i = 0; i < particles.Count; i++)
+            {
+
+            }
+
+            //collisionQueue.Enqueue(new Event());
+        }
 
         public MainWindow()
         {

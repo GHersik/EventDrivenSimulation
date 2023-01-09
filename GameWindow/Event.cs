@@ -24,7 +24,7 @@ namespace SimulationRender
             this.countp2 = countp2;
         }
 
-        public int CompareTo(Event? that)
+        public int CompareTo(Event that)
         {
             if (this.time - that.time > 0)
                 return 1;

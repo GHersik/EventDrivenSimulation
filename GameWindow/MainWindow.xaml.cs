@@ -17,6 +17,7 @@ using System.Windows.Threading;
 using System.Windows.Ink;
 using System.Threading;
 using SimulationRender;
+using SimulationRender.Properties;
 
 namespace SimulationWindow
 {
@@ -44,7 +45,7 @@ namespace SimulationWindow
         SolidColorBrush yellow = (SolidColorBrush)new BrushConverter().ConvertFrom("#FFD93D");
         SolidColorBrush green = (SolidColorBrush)new BrushConverter().ConvertFrom("#6BCB77");
         SolidColorBrush red = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF6B6B");
-        //FontFamily 
+        
 
         private void PredictCollisions(Particle p1)
         {
@@ -62,20 +63,6 @@ namespace SimulationWindow
         {
             WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
             InitializeComponent();
-
-            //SetupUIcomponents
-            //Matrix
-            Simulationborder.Stroke = blue;
-            //Buttons
-            TimeButton.Foreground = white;
-            TimeButton.Background = blue;
-            TimeButton.BorderBrush = blue;
-            //Text
-            canvasMatrixTop.Foreground = blue;
-            canvasMatrixBottom.Foreground = blue;
-            ParticlesCounter.Foreground = blue;
-            LineMatrixLength.Stroke = red;
-
 
             //Setup simulation
             Time.Tick += Update;

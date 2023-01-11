@@ -7,20 +7,23 @@
         mc:Ignorable="d"
         Title="Simulation" Height="760" Width="1080" ResizeMode="NoResize" Background="Black">
     <Canvas Name="Render" Height="500" Width="500" Background="Black" Focusable="True" 
-           VerticalAlignment="Top" HorizontalAlignment="Left" MouseLeftButtonDown="AddOrRemoveParticle" MouseRightButtonDown="DragParticle" Margin="476,130,0,0">
+           VerticalAlignment="Bottom" HorizontalAlignment="Left" MouseLeftButtonDown="AddOrRemoveParticle" MouseRightButtonDown="DragParticle" Margin="450,0,0,104">
         <!--Text-->
-        <TextBlock FontSize="20" Foreground="White" FontFamily="inter"  FontWeight="DemiBold"   Canvas.Top="-98" TextAlignment="Center"  TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Height="30" VerticalAlignment="Top" Width="284" Canvas.Left="-98">Event Driven Simulation</TextBlock>
-        <TextBlock FontFamily="inter" FontSize="14" Foreground="White"  FontWeight="bold"   Canvas.Top="18" TextAlignment="left"  TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Height="25" VerticalAlignment="Center" Width="162" Canvas.Left="-433">Particles on a scene</TextBlock>
-        <TextBlock Name="canvasMatrixTop" FontSize="15" Foreground="White"  FontWeight="bold"   Canvas.Top="-25" TextAlignment="Center" Canvas.Left="-12" TextWrapping="WrapWithOverflow" Height="21" Width="48" HorizontalAlignment="Center" VerticalAlignment="Top"><Run Language="pl-pl" Text="(0, 0)"/></TextBlock>
-        <TextBlock Name="canvasMatrixBottom" FontSize="15" Foreground="White"  FontWeight="bold"   Canvas.Top="505" TextAlignment="Center" Canvas.Left="428" TextWrapping="WrapWithOverflow" Height="21" Width="86" HorizontalAlignment="Left" VerticalAlignment="Center"><Run Language="pl-pl" Text="(500, 500)"/></TextBlock>
+        <TextBlock FontSize="20" Foreground="White" FontFamily="Press Start 2P"  FontWeight="DemiBold"   Canvas.Top="-86" TextAlignment="Center"  TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Height="46" VerticalAlignment="Center" Width="520" Canvas.Left="-184">Event Driven Simulation</TextBlock>
+        <TextBlock  FontSize="14" Foreground="White"  FontWeight="bold"   Canvas.Top="18" TextAlignment="left"  TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Height="25" VerticalAlignment="Center" Width="162" Canvas.Left="-351" FontFamily="Roboto Mono">Particles on a scene</TextBlock>
+        <TextBlock Name="canvasMatrixTop" FontSize="15" Foreground="#FF4D96FF"  FontWeight="bold"   Canvas.Top="-25" TextAlignment="Center" Canvas.Left="-12" TextWrapping="WrapWithOverflow" Height="21" Width="48" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Roboto Mono"><Run Language="pl-pl" Text="(0, 0)"/></TextBlock>
+        <TextBlock Name="canvasMatrixBottom" FontSize="15" Foreground="#FF4D96FF"  FontWeight="bold"   Canvas.Top="505" TextAlignment="Center" Canvas.Left="428" TextWrapping="WrapWithOverflow" Height="21" Width="86" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Roboto Mono"><Run Language="pl-pl" Text="(500, 500)"/></TextBlock>
+        <TextBlock x:Name="SpecificParticle" FontSize="20" Foreground="#FF4D96FF"  FontWeight="bold"   Canvas.Top="60" TextAlignment="left"  TextWrapping="WrapWithOverflow" Height="25" Width="50" Canvas.Left="-166" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Roboto Mono"><Run Language="pl-pl" Text="p1"/><LineBreak/><Run/><Run Text="a scene"/></TextBlock>
+        <TextBlock x:Name="ParticlesCounter" FontSize="14" Foreground="#FF4D96FF"  FontWeight="bold"   Canvas.Top="18" TextAlignment="left"  TextWrapping="WrapWithOverflow" Height="25" Width="50" Canvas.Left="-213" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Roboto Mono"><Run Language="pl-pl" Text="0"/></TextBlock>
+        <TextBlock FontSize="20" Foreground="White" FontWeight="DemiBold"   Canvas.Top="60" TextAlignment="Center"  TextWrapping="WrapWithOverflow" Height="30" Width="138" Canvas.Left="-282" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Roboto Mono"><Run Language="pl-pl" Text="Particle"/></TextBlock>
         <!--Text-->
-        <Rectangle Name="Simulationborder" Width="504" Height="504" Canvas.Left="-2" StrokeThickness="3" Stroke="blue" Canvas.Top="-2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-        <Ellipse Name="ParticleIcon" Width="30" Height="30" Canvas.Left="-295" Canvas.Top="95" Stroke="white" StrokeThickness="2" HorizontalAlignment="Left" VerticalAlignment="Center"  >
+        <Rectangle Name="Simulationborder" Width="504" Height="504" Canvas.Left="-2" StrokeThickness="3" Stroke="#FF4D96FF" Canvas.Top="-2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <Ellipse Name="ParticleIcon" Width="30" Height="30" Canvas.Left="-213" Canvas.Top="95" Stroke="white" StrokeThickness="2" HorizontalAlignment="Left" VerticalAlignment="Center"  >
         </Ellipse>
 
-        <Line Name="LineMatrixLength" X1="40" X2="40" Y1="0" Y2="506" Stroke="white" StrokeThickness="2" Canvas.Left="502" Canvas.Top="-2" HorizontalAlignment="Center" Height="504" VerticalAlignment="Top" Width="41"></Line>
-        <Button Click="TimeButton_Click" Name="TimeButton" Canvas.Left="200" Canvas.Top="527" Width="100" Height="22" Background="Goldenrod" BorderBrush="Honeydew" Cursor="Hand" HorizontalAlignment="Left" VerticalAlignment="Top" >Stop Time</Button>
-        <TextBlock Name="ParticlesCounter" FontSize="14" Foreground="White"  FontWeight="bold"   Canvas.Top="18" TextAlignment="left"  TextWrapping="WrapWithOverflow" Height="25" Width="50" Canvas.Left="-266" HorizontalAlignment="Left" VerticalAlignment="Center"><Run Language="pl-pl" Text="0"/><LineBreak/><Run/><Run Text="a scene"/></TextBlock>
-        <TextBlock FontSize="20" Foreground="White" FontFamily="Inter"  FontWeight="DemiBold"   Canvas.Top="60" TextAlignment="Center"  TextWrapping="WrapWithOverflow" Height="30" Width="138" Canvas.Left="-364" HorizontalAlignment="Left" VerticalAlignment="Top"><Run Language="pl-pl" Text="Particle"/></TextBlock>
+        <Line Name="LineMatrixLength" X1="40" X2="40" Y1="0" Y2="506" Stroke="#FFFF6B6B" StrokeThickness="2" Canvas.Left="502" Canvas.Top="-2" HorizontalAlignment="Center" Height="504" VerticalAlignment="Top" Width="41"></Line>
+        <Button Click="TimeButton_Click" Name="TimeButton" Canvas.Left="200" Canvas.Top="527" Width="100" Height="22" Background="#FF4D96FF" BorderBrush="#FF4D96FF" Cursor="Hand" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" >Stop Time
+        </Button>
+
     </Canvas>
 </Window>

@@ -27,8 +27,8 @@ namespace SimulationWindow
     {
         //SimulationTime
         private readonly DispatcherTimer Time = new DispatcherTimer();
-        private static double deltaTime = 0.10;
-        private TimeSpan fixedTime = TimeSpan.FromMilliseconds(20);
+        private static double deltaTime = 0.020;
+        private TimeSpan fixedTime = TimeSpan.FromMilliseconds(deltaTime * 1000);
         private TimeSpan time = TimeSpan.Zero;
 
         //Particles
@@ -37,6 +37,14 @@ namespace SimulationWindow
 
         //Collision prediction
         private PriorityQueue<Event, double> collisionQueue = new PriorityQueue<Event, double> { };
+
+        //Color palette
+        SolidColorBrush blue = (SolidColorBrush)new BrushConverter().ConvertFrom("#4D96FF");
+        SolidColorBrush white = (SolidColorBrush)new BrushConverter().ConvertFrom("#FFFFFF");
+        SolidColorBrush yellow = (SolidColorBrush)new BrushConverter().ConvertFrom("#FFD93D");
+        SolidColorBrush green = (SolidColorBrush)new BrushConverter().ConvertFrom("#6BCB77");
+        SolidColorBrush red = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF6B6B");
+        //FontFamily 
 
         private void PredictCollisions(Particle p1)
         {
@@ -54,6 +62,20 @@ namespace SimulationWindow
         {
             WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
             InitializeComponent();
+
+            //SetupUIcomponents
+            //Matrix
+            Simulationborder.Stroke = blue;
+            //Buttons
+            TimeButton.Foreground = white;
+            TimeButton.Background = blue;
+            TimeButton.BorderBrush = blue;
+            //Text
+            canvasMatrixTop.Foreground = blue;
+            canvasMatrixBottom.Foreground = blue;
+            ParticlesCounter.Foreground = blue;
+            LineMatrixLength.Stroke = red;
+
 
             //Setup simulation
             Time.Tick += Update;
@@ -75,7 +97,8 @@ namespace SimulationWindow
             //Time Driven Simulation O(n^2)
             for (int i = 0; i < particles.Count; i++)
             {
-                particles[i].WallCollision(ref Render);
+                particles[i].VerticalWallCollision(ref Render);
+                particles[i].HorizontalWallCollision(ref Render);
 
                 for (int j = i; j < particles.Count - 1; j++)
                     particles[i].ParticleCollision(particles[i], particles[j + 1]);
@@ -96,6 +119,8 @@ namespace SimulationWindow
                     new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()),
                     size / 2, mass);
             }
+
+            ParticlesCounter.Text = Convert.ToString(particles.Count());
         }
 
         private void AddOrRemoveParticle(object sender, MouseButtonEventArgs e)
@@ -106,6 +131,7 @@ namespace SimulationWindow
                 Particle activeParticle = (Particle)e.OriginalSource;
                 particles.Remove(activeParticle);
                 Render.Children.Remove(activeParticle);
+                ParticlesCounter.Text = Convert.ToString(particles.Count());
             }
             else
             {
@@ -117,6 +143,7 @@ namespace SimulationWindow
                 //Add to Render
                 particles.Add(newParticle);
                 Render.Children.Add(newParticle);
+                ParticlesCounter.Text = Convert.ToString(particles.Count());
             }
         }
 
@@ -136,7 +163,7 @@ namespace SimulationWindow
 
         private void DragParticle(object sender, MouseButtonEventArgs e)
         {
-            foreach (var particle in SpawnParticles(10, 8, 1, new Vector2(Mouse.GetPosition(Render).X, Mouse.GetPosition(Render).Y), TimeSpan.Zero))
+            foreach (var particle in SpawnParticles(10, 12, 1, new Vector2(Mouse.GetPosition(Render).X, Mouse.GetPosition(Render).Y), TimeSpan.Zero))
             {
                 Render.Children.Add(particle);
                 particles.Add(particle);

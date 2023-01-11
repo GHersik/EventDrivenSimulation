@@ -32,6 +32,7 @@ namespace SimulationWindow
         private double radius, mass;
 
         private static readonly Random rnd = new Random();
+        private static SolidColorBrush color = (SolidColorBrush)new BrushConverter().ConvertFrom("#4D96FF");
 
         #region Constructors
 
@@ -45,9 +46,8 @@ namespace SimulationWindow
 
             this.Width = radius + radius;
             this.Height = radius + radius;
-            StrokeThickness = 1;
-            Stroke = Brushes.Black;
-            Fill = new SolidColorBrush(Color.FromRgb((byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255), (byte)rnd.Next(1, 255)));
+            StrokeThickness = 2;
+            Stroke = color;
 
             //Position accordingly
             this.RenderTransform = new TranslateTransform
@@ -133,6 +133,11 @@ namespace SimulationWindow
 
         public double timeToHitParticle(Particle p1)
         {
+            double distanceBetween = ((this.position.x - p1.position.x) * (this.position.x - p1.position.x))
+                + ((this.position.y - p1.position.y) * (this.position.y - p1.position.y));
+
+            Vector2 relativeVelocity = this.velocity - p1.velocity;
+
 
 
             return 0;

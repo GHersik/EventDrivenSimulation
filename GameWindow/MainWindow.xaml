@@ -5,12 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SimulationWindow"
         mc:Ignorable="d"
-        Title="Simulation" Height="540" Width="480" ResizeMode="NoResize" Background="BurlyWood">
-    <Canvas Name="Render" Height="400" Width="400" Background="Beige" Focusable="True"
-           VerticalAlignment="Center" HorizontalAlignment="Center" MouseLeftButtonDown="AddOrRemoveParticle" MouseRightButtonDown="DragParticle">
-        <TextBlock FontSize="14" FontWeight="DemiBold"   Canvas.Top="-43" TextAlignment="Center" Canvas.Left="58" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Height="40" VerticalAlignment="Top" Width="284">Left mouse click on the inner box to spawn more particles or on the particle to delete it</TextBlock>
-        <Button Click="TimeButton_Click" Name="TimeButton" Canvas.Left="150" Canvas.Top="411" Width="100" Height="22" Background="Goldenrod" BorderBrush="Honeydew" Cursor="Hand" >Stop Time</Button>
+        Title="Simulation" Height="760" Width="1080" ResizeMode="NoResize" Background="Black">
+    <Canvas Name="Render" Height="500" Width="500" Background="Black" Focusable="True" 
+           VerticalAlignment="Top" HorizontalAlignment="Left" MouseLeftButtonDown="AddOrRemoveParticle" MouseRightButtonDown="DragParticle" Margin="476,130,0,0">
+        <!--Text-->
+        <TextBlock FontSize="20" Foreground="White" FontFamily="inter"  FontWeight="DemiBold"   Canvas.Top="-98" TextAlignment="Center"  TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Height="30" VerticalAlignment="Top" Width="284" Canvas.Left="-98">Event Driven Simulation</TextBlock>
+        <TextBlock FontFamily="inter" FontSize="14" Foreground="White"  FontWeight="bold"   Canvas.Top="18" TextAlignment="left"  TextWrapping="WrapWithOverflow" HorizontalAlignment="Left" Height="25" VerticalAlignment="Center" Width="162" Canvas.Left="-433">Particles on a scene</TextBlock>
+        <TextBlock Name="canvasMatrixTop" FontSize="15" Foreground="White"  FontWeight="bold"   Canvas.Top="-25" TextAlignment="Center" Canvas.Left="-12" TextWrapping="WrapWithOverflow" Height="21" Width="48" HorizontalAlignment="Center" VerticalAlignment="Top"><Run Language="pl-pl" Text="(0, 0)"/></TextBlock>
+        <TextBlock Name="canvasMatrixBottom" FontSize="15" Foreground="White"  FontWeight="bold"   Canvas.Top="505" TextAlignment="Center" Canvas.Left="428" TextWrapping="WrapWithOverflow" Height="21" Width="86" HorizontalAlignment="Left" VerticalAlignment="Center"><Run Language="pl-pl" Text="(500, 500)"/></TextBlock>
+        <!--Text-->
+        <Rectangle Name="Simulationborder" Width="504" Height="504" Canvas.Left="-2" StrokeThickness="3" Stroke="blue" Canvas.Top="-2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        <Ellipse Name="ParticleIcon" Width="30" Height="30" Canvas.Left="-295" Canvas.Top="95" Stroke="white" StrokeThickness="2" HorizontalAlignment="Left" VerticalAlignment="Center"  >
+        </Ellipse>
 
-
+        <Line Name="LineMatrixLength" X1="40" X2="40" Y1="0" Y2="506" Stroke="white" StrokeThickness="2" Canvas.Left="502" Canvas.Top="-2" HorizontalAlignment="Center" Height="504" VerticalAlignment="Top" Width="41"></Line>
+        <Button Click="TimeButton_Click" Name="TimeButton" Canvas.Left="200" Canvas.Top="527" Width="100" Height="22" Background="Goldenrod" BorderBrush="Honeydew" Cursor="Hand" HorizontalAlignment="Left" VerticalAlignment="Top" >Stop Time</Button>
+        <TextBlock Name="ParticlesCounter" FontSize="14" Foreground="White"  FontWeight="bold"   Canvas.Top="18" TextAlignment="left"  TextWrapping="WrapWithOverflow" Height="25" Width="50" Canvas.Left="-266" HorizontalAlignment="Left" VerticalAlignment="Center"><Run Language="pl-pl" Text="0"/><LineBreak/><Run/><Run Text="a scene"/></TextBlock>
+        <TextBlock FontSize="20" Foreground="White" FontFamily="Inter"  FontWeight="DemiBold"   Canvas.Top="60" TextAlignment="Center"  TextWrapping="WrapWithOverflow" Height="30" Width="138" Canvas.Left="-364" HorizontalAlignment="Left" VerticalAlignment="Top"><Run Language="pl-pl" Text="Particle"/></TextBlock>
     </Canvas>
 </Window>

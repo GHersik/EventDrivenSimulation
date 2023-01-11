@@ -28,11 +28,12 @@ namespace SimulationWindow
     /// <param name="mass">Mass of a particle.</param>
     public class Particle : Shape
     {
-        private Vector2 position, velocity;
-        private double radius, mass;
+        public Vector2 position, velocity;
+        public double radius, mass;
 
         private static readonly Random rnd = new Random();
         private static SolidColorBrush color = (SolidColorBrush)new BrushConverter().ConvertFrom("#4D96FF");
+        private static SolidColorBrush transparent = (SolidColorBrush)new BrushConverter().ConvertFrom("#00000000");
 
         #region Constructors
 
@@ -48,6 +49,7 @@ namespace SimulationWindow
             this.Height = radius + radius;
             StrokeThickness = 2;
             Stroke = color;
+            Fill = transparent;
 
             //Position accordingly
             this.RenderTransform = new TranslateTransform

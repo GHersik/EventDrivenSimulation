@@ -21,7 +21,7 @@
         <TextBlock Name="canvasMatrixBottom" FontSize="15" Foreground="#FF4D96FF"  FontWeight="bold"   Canvas.Top="505" TextAlignment="Center" Canvas.Left="428" TextWrapping="WrapWithOverflow" Height="21" Width="86" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Roboto Mono"><Run Language="pl-pl" Text="(500, 500)"/></TextBlock>
 
         <!--Particle p1-->
-        <Canvas Name="Particle1" HorizontalAlignment="Left" Height="236" Canvas.Left="-293" Canvas.Top="4" VerticalAlignment="Center" Width="344">
+        <Canvas Name="Particle1" HorizontalAlignment="Left" Height="236" Canvas.Left="-293" Canvas.Top="4" VerticalAlignment="Center" Width="344" Visibility="Hidden">
             <TextBlock x:Name="p1Text" FontSize="20" Foreground="White" FontWeight="DemiBold" TextAlignment="Left"  TextWrapping="WrapWithOverflow" Height="31" Width="71" Canvas.Left="59" FontFamily="Roboto Mono" HorizontalAlignment="Left" VerticalAlignment="Top"><Run Language="pl-pl" Text="Particle"/></TextBlock>
             <TextBlock  FontSize="20" Foreground="#FFFFD93D"  FontWeight="bold" TextAlignment="left"  TextWrapping="WrapWithOverflow" Height="31" Width="50" Canvas.Left="135" FontFamily="Roboto Mono" HorizontalAlignment="Left" VerticalAlignment="Top"><Run Language="pl-pl" Text="p1"/></TextBlock>
             <Ellipse x:Name="ParticleIcon" Width="54" Height="54" Stroke="#FF4D96FF" StrokeThickness="2" Canvas.Top="50" Canvas.Left="84" HorizontalAlignment="Left" VerticalAlignment="Top"/>
@@ -56,7 +56,7 @@
         </Canvas>
 
         <!--Particle p2-->
-        <Canvas Name="Particle2" HorizontalAlignment="Center" Height="236" Canvas.Left="-293" Canvas.Top="293" VerticalAlignment="Top" Width="344">
+        <Canvas Name="Particle2" HorizontalAlignment="Center" Height="236" Canvas.Left="-293" Canvas.Top="293" VerticalAlignment="Top" Width="344" Visibility="Hidden">
             <TextBlock  FontSize="20" Foreground="White" FontWeight="DemiBold" TextAlignment="Left"  TextWrapping="WrapWithOverflow" Height="31" Width="71" Canvas.Left="59" FontFamily="Roboto Mono" HorizontalAlignment="Left" VerticalAlignment="Top"><Run Language="pl-pl" Text="Particle"/></TextBlock>
             <TextBlock  FontSize="20" Foreground="#FFFFD93D"  FontWeight="bold" TextAlignment="left"  TextWrapping="WrapWithOverflow" Height="31" Width="50" Canvas.Left="135" FontFamily="Roboto Mono" HorizontalAlignment="Left" VerticalAlignment="Top"><Run Text="p"/><Run Language="pl-pl" Text="2"/></TextBlock>
             <Ellipse  Width="54" Height="54" Stroke="#FF4D96FF" StrokeThickness="2" Canvas.Top="50" Canvas.Left="84" HorizontalAlignment="Left" VerticalAlignment="Top"/>
@@ -94,5 +94,7 @@
         <Button Click="TimeButton_Click" Name="TimeButton" Canvas.Left="200" Canvas.Top="536" Width="100" Height="22" Background="#FF4D96FF" BorderBrush="#FF4D96FF" Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" >Stop Time
         </Button>
 
+
+        
     </Canvas>
 </Window>

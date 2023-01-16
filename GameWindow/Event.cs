@@ -7,36 +7,39 @@ using System.Threading.Tasks;
 
 namespace SimulationRender
 {
-    public class Event : IComparable<Event>
+    public class Event //: IComparable<Event>
     {
-        private double time;
-        private Particle p1, p2;
-        private int countp1, countp2;
+        public double time;
+        public Particle? p1, p2;
+        private int countp1 = 0, countp2 = 0;
 
-        public Event(double time, Particle p1, Particle p2, int countp1, int countp2)
+        public Event(double time, Particle p1, Particle p2)
         {
-
-
             this.time = time;
             this.p1 = p1;
             this.p2 = p2;
-            this.countp1 = countp1;
-            this.countp2 = countp2;
+
+            if (p1 != null) countp1 = p1.count;
+            if (p2 != null) countp2 = p2.count;
         }
 
-        public int CompareTo(Event that)
-        {
-            if (this.time - that.time > 0)
-                return 1;
-            if (this.time - that.time == 0)
-                return 0;
+        //public int CompareTo(Event that)
+        //{
+        //    if (this.time - that.time > 0)
+        //        return 1;
+        //    if (this.time - that.time == 0)
+        //        return 0;
 
-            return -1;
-        }
+        //    return -1;
+        //}
 
         public bool isValid()
         {
-            return true;
+            if (p1 != null && p2 != null) return (p1.count == countp1 && p2.count == countp2);
+            else if (p1 != null) return (p1.count == countp1);
+            else if (p2 != null) return (p2.count == countp2);
+
+            return false;
         }
     }
 }

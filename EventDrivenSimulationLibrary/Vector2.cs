@@ -76,6 +76,6 @@ namespace EventDrivenSimulationLibrary
         /// <param name="vectorToDivide"></param>
         /// <param name="scalar"></param>
         /// <returns></returns>
-        public static Vector2 operator /(Vector2 vectorToMultiply, double scalar) => new Vector2(vectorToMultiply.x / scalar, vectorToMultiply.y / scalar);
+        public static Vector2 operator /(Vector2 vectorToDivide, double scalar) => new Vector2(vectorToDivide.x / scalar, vectorToDivide.y / scalar);
     }
 }

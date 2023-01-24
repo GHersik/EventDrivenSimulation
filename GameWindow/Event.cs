@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SimulationRender
 {
-    public class Event //: IComparable<Event>
+    public class Event
     {
-        public double time;
+        public double time = 0;
         public Particle? p1, p2;
         private int countp1 = 0, countp2 = 0;
 
@@ -22,16 +22,6 @@ namespace SimulationRender
             if (p1 != null) countp1 = p1.count;
             if (p2 != null) countp2 = p2.count;
         }
-
-        //public int CompareTo(Event that)
-        //{
-        //    if (this.time - that.time > 0)
-        //        return 1;
-        //    if (this.time - that.time == 0)
-        //        return 0;
-
-        //    return -1;
-        //}
 
         public bool isValid()
         {

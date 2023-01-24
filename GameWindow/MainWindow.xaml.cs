@@ -33,6 +33,7 @@ namespace SimulationWindow
         static SolidColorBrush green = (SolidColorBrush)new BrushConverter().ConvertFrom("#6BCB77");
         static SolidColorBrush yellow = (SolidColorBrush)new BrushConverter().ConvertFrom("#FFD93D");
         static SolidColorBrush red = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF6B6B");
+        private static SolidColorBrush blue = (SolidColorBrush)new BrushConverter().ConvertFrom("#4D96FF");
 
         private readonly Random rnd = new Random();
 
@@ -45,8 +46,9 @@ namespace SimulationWindow
 
         //Simulation time
         private readonly DispatcherTimer Time = new DispatcherTimer();
-        private static double deltaTime = 0.020;
-        private TimeSpan fixedTime = TimeSpan.FromMilliseconds(deltaTime * 1000);
+        private static double stepTime = 20;
+        //private double dt = 0.03;
+        private TimeSpan fixedTime = TimeSpan.FromMilliseconds(stepTime);
         private TimeSpan totalTimeElapsed = TimeSpan.Zero;
 
         //Particles
@@ -54,9 +56,8 @@ namespace SimulationWindow
         private Particle? p1 = null;
         private Particle? p2 = null;
 
-        //Event driven simulation logic
+        //Event driven collision logic
         EventDrivenCollisionSystem collisionSystem;
-
 
         public MainWindow()
         {
@@ -75,45 +76,48 @@ namespace SimulationWindow
             Time.Interval = fixedTime;
             Time.Start();
 
-
-            //Spawn particles
-            //foreach (var particle in SpawnParticles(11, 16, 1, new Vector2(150, 150), TimeSpan.Zero))
-            //{
-            //    Render.Children.Add(particle);
-            //    particles.Add(particle);
-            //}
-
-
             particles = IntializeParticles();
-            collisionSystem = new EventDrivenCollisionSystem(particles);
+            collisionSystem = new EventDrivenCollisionSystem(particles, stepTime);
         }
 
         private void Update(object sender, EventArgs e)
         {
+            //Fully Working
+            //for (int i = 0; i < particles.Length; i++)
+            //{
+            //    particles[i].Move(collisionSystem.updateCount);
+            //    particles[i].Draw();
+            //}
+
+            //collisionSystem.ResolveCollision();
+            //collisionSystem.CalculateNextCollision();
+
+
             //Event Driven Simulation O(n log n), initialization O(N^2)
             if (collisionSystem.nextCollision <= totalTimeElapsed)
             {
+                for (int i = 0; i < particles.Length; i++)
+                {
+                    particles[i].Move(collisionSystem.offsetDeltaTime);
+                    particles[i].Draw();
+                }
+
                 collisionSystem.ResolveCollision();
                 collisionSystem.CalculateNextCollision();
+
+                totalTimeElapsed += fixedTime * collisionSystem.offsetDeltaTime;
             }
-            for (int i = 0; i < particles.Length; i++)
+            else
             {
-                particles[i].Move(1);
-                particles[i].Draw();
+
+                for (int i = 0; i < particles.Length; i++)
+                {
+                    particles[i].Move(1);
+                    particles[i].Draw();
+                }
+
+                totalTimeElapsed += fixedTime;
             }
-
-            //Time Driven Simulation O(n^2), no initialization
-            //for (int i = 0; i < particles.Length; i++)
-            //{
-            //    particles[i].VerticalWallCollision();
-            //    particles[i].HorizontalWallCollision();
-
-            //    for (int j = i; j < particles.Length - 1; j++)
-            //        particles[i].ParticleCollision(particles[j + 1]);
-
-            //    particles[i].Move(1);
-            //    particles[i].Draw();
-            //}
 
             //Track each particle
             TrackParticle1Stats();
@@ -122,8 +126,6 @@ namespace SimulationWindow
 
             //both Particles
             DrawDistanceLine();
-
-            totalTimeElapsed += fixedTime;
         }
 
         #region Update UI Elements
@@ -135,6 +137,7 @@ namespace SimulationWindow
                 p1text.RenderTransform = new TranslateTransform(p1.position.x - (p1.Width), p1.position.y - (p1.Height + p1.Height));
                 DrawDistanceLine();
                 DrawVector(p1);
+                TrackParticle1Stats();
 
                 //Show UI
                 Particle1.Visibility = Visibility.Visible;
@@ -162,7 +165,7 @@ namespace SimulationWindow
                 particleRadius.Text = p1.radius.ToString();
                 particleMass.Text = p1.mass.ToString();
 
-                p1text.RenderTransform = new TranslateTransform(p1.position.x - (p1.Width), p1.position.y - (p1.Height + p1.Height));
+                p1text.RenderTransform = new TranslateTransform(p1.position.x - (p1.radius + 10), p1.position.y - (p1.radius + 20));
             }
         }
         private void TrackParticlep2(object sender, MouseButtonEventArgs e)
@@ -172,6 +175,7 @@ namespace SimulationWindow
                 p2 = (Particle)e.OriginalSource;
                 p2text.RenderTransform = new TranslateTransform(p2.position.x - (p2.Width), p2.position.y - (p2.Height + p2.Height));
                 DrawDistanceLine();
+                TrackParticle2Stats();
 
                 //Show UI
                 Particle2.Visibility = Visibility.Visible;
@@ -197,7 +201,7 @@ namespace SimulationWindow
                 particle2Radius.Text = p2.radius.ToString();
                 particle2Mass.Text = p2.mass.ToString();
 
-                p2text.RenderTransform = new TranslateTransform(p2.position.x - (p2.Width), p2.position.y - (p2.Height + p2.Height));
+                p2text.RenderTransform = new TranslateTransform(p2.position.x - (p2.Width + 10), p2.position.y - (p2.Height + 20));
             }
         }
         private void DrawDistanceLine()
@@ -269,37 +273,23 @@ namespace SimulationWindow
         }
         #endregion
 
-        //IEnumerable<Particle> SpawnParticles(int amountToSpawn, double size, double mass, Vector2 position, TimeSpan interval)
-        //{
-        //    for (int i = 0; i < amountToSpawn; i++)
-        //    {
-        //        TimeSpan timeBetween = totalTimeElapsed + interval;
-
-        //        if (timeBetween == totalTimeElapsed)
-        //            yield return new Particle(position,
-        //            new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()),
-        //            size / 2, mass);
-        //    }
-
-        //    ParticlesCounter.Text = Convert.ToString(particles.Count());
-        //}
-
         private Particle[] IntializeParticles()
         {
             //Spawn 100 particles
             Particle[] particles = new Particle[100];
-            int x = 25;
-            int y = 25;
+            double x = 25.1;
+            double y = 25.1;
 
             //max 16
-            int randomOffSet = 16;
+            int randomOffSet = 12;
 
             for (int i = 0; i < 100; i += 10)
             {
                 for (int j = 0; j < 10; j++)
                 {
                     particles[i + j] = new Particle(new Vector2(x + rnd.Next(-randomOffSet, randomOffSet), y + rnd.Next(-randomOffSet, randomOffSet)),
-                        new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()), 14 / 2, 1);
+                        new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()), 8 / 2, 1);
+                    //{ Stroke = blue };
                     Render.Children.Add(particles[i + j]);
                     x += 50;
                 }
@@ -307,6 +297,11 @@ namespace SimulationWindow
                 y += 50;
                 x = 25;
             }
+
+            //one big
+            //particles[100] = new Particle(new Vector2(250, 250), new Vector2(rnd.Next(-5, 5) * rnd.NextDouble(), rnd.Next(-5, 5) * rnd.NextDouble()), 52 / 2, 16)
+            //{ Stroke = yellow };
+            //Render.Children.Add(particles[100]);
 
             ParticlesCounter.Text = Convert.ToString(particles.Length);
             return particles;

@@ -11,19 +11,24 @@ namespace SimulationRender
     {
         private PriorityQueue<Event, double> collisionQueue = new PriorityQueue<Event, double>();
         private double time = 0;
-        private Particle[] particles;
+        private double stepTime = 0;
+        public double offsetDeltaTime = 1;
+        private readonly Particle[] particles;
 
-        public TimeSpan nextCollision;
+        public double updateCount = 0;
+
+        public TimeSpan nextCollision = TimeSpan.Zero;
         private Event? currentEvent;
 
-        public EventDrivenCollisionSystem(Particle[] particles)
+        public EventDrivenCollisionSystem(Particle[] particles, double stepTime)
         {
             this.particles = particles;
+            this.stepTime = stepTime;
 
             for (int i = 0; i < particles.Length; i++)
                 PredictCollisions(particles[i]);
 
-            collisionQueue.Enqueue(new Event(0, null, null), 0);
+            //collisionQueue.Enqueue(new Event(0, null, null), 0);
             CalculateNextCollision();
         }
 
@@ -35,19 +40,23 @@ namespace SimulationRender
         /// <param name="p1">Particle to be evaluated</param>
         private void PredictCollisions(Particle p1)
         {
-            //N + 2 events added to the PQ
+            //N + 2 events added to the PQ at worst
             if (p1 == null) return;
 
-            //for (int i = 0; i < particles.Length - 1; i++)
-            //{
-            //    double deltaTime = p1.timeToHitParticle(particles[i]);
-            //    collisionQueue.Enqueue(new Event(deltaTime, p1, particles[i]), deltaTime);
-            //}
+            for (int i = 0; i < particles.Length; i++)
+            {
+                double deltaTimeParticleCollision = time + p1.timeToHitParticle(particles[i]);
+                if (deltaTimeParticleCollision != double.PositiveInfinity)
+                    collisionQueue.Enqueue(new Event(deltaTimeParticleCollision, p1, particles[i]), deltaTimeParticleCollision);
+            }
 
             double deltaTimeVWall = time + p1.timeToHitVerticalWall();
+            if (deltaTimeVWall != double.PositiveInfinity)
+                collisionQueue.Enqueue(new Event(deltaTimeVWall, p1, null), deltaTimeVWall);
+
             double deltaTimeHWall = time + p1.timeToHitHorizontalWall();
-            collisionQueue.Enqueue(new Event(deltaTimeVWall, p1, null), deltaTimeVWall);
-            collisionQueue.Enqueue(new Event(deltaTimeHWall, null, p1), deltaTimeHWall);
+            if (deltaTimeHWall != double.PositiveInfinity)
+                collisionQueue.Enqueue(new Event(deltaTimeHWall, null, p1), deltaTimeHWall);
         }
 
         //public void Simulation()
@@ -85,16 +94,21 @@ namespace SimulationRender
                 if (!currentEvent.isValid()) continue;
 
 
-                //double updatesCount = Math.Floor(currentEvent.time - time);
-                double deltaTime = Math.Truncate((currentEvent.time - time) * 1000) / 1000;
 
+                //updateCount = currentEvent.time - time;
+                //time = currentEvent.time;
+
+
+
+
+                ////double updatesCount = Math.Floor(currentEvent.time - time);
+                ////double deltaTime = Math.Truncate((currentEvent.time - time) * 1000) / 1000;
+                ////offsetDeltaTime = (currentEvent.time - time) / Math.Ceiling(currentEvent.time - time);
+                offsetDeltaTime = (currentEvent.time - time) - Math.Floor(currentEvent.time - time);
                 time = currentEvent.time;
 
-
-                nextCollision = TimeSpan.FromMilliseconds(time * 20);
-
-
-
+                //time - time before next collision
+                nextCollision = TimeSpan.FromMilliseconds(time * stepTime - stepTime);
 
                 break;
             }
@@ -102,16 +116,14 @@ namespace SimulationRender
 
         public void ResolveCollision()
         {
-            if (currentEvent.p1 != null && currentEvent.p2 != null)         //Null evaluation logic
-                currentEvent.p1.ParticleCollision(currentEvent.p2);         //if both are not null calculate particle - particle collision
+            if (currentEvent.p1 != null && currentEvent.p2 != null)
+                currentEvent.p1.ParticleCollision(currentEvent.p2);
             else if (currentEvent.p1 != null && currentEvent.p2 == null)
-                currentEvent.p1.VerticalWallCollision();                    //if the first one is not null calculate the vertical wall collision
+                currentEvent.p1.VerticalWallCollision();
             else if (currentEvent.p1 == null && currentEvent.p2 != null)
-                currentEvent.p2.HorizontalWallCollision();                  //if the second one is not null calculate the horizontal wall collision
-            //else if (currentEvent.p1 == null && currentEvent.p2 == null)
-            //    return;                                                   //both null, get another event, no collision
+                currentEvent.p2.HorizontalWallCollision();
 
-            PredictCollisions(currentEvent.p1);                             //Predict future collisions for those two particles
+            PredictCollisions(currentEvent.p1);
             PredictCollisions(currentEvent.p2);
         }
     }

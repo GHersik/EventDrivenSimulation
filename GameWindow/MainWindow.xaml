@@ -91,7 +91,7 @@
         </Canvas>
 
         <!--TimeButton-->
-        <Button Click="TimeButton_Click" Name="TimeButton" Canvas.Left="200" Canvas.Top="536" Width="100" Height="22" Background="#FF4D96FF" BorderBrush="#FF4D96FF" Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" >Stop Time
+        <Button Click="TimeButton_Click" Name="TimeButton" Canvas.Left="200" Canvas.Top="536" Width="100" Height="22" Background="#FF4D96FF" BorderBrush="#FF4D96FF" Cursor="Hand" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="White" >Start Time
         </Button>
 
 

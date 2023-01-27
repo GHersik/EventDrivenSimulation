@@ -27,13 +27,12 @@ namespace SimulationWindow
     /// <param name="velocity">Velocity of a particle using x and y axis.</param>
     /// <param name="radius">Radius of a particle.</param>
     /// <param name="mass">Mass of a particle.</param>
+    /// <param name="count">"Collisions counter"</param>
     public class Particle : Shape
     {
         public Vector2 position, velocity;      //position and velocity
         public double radius, mass;             //radius and mass
         public int count;                       //collision counter
-
-        private static SolidColorBrush blue = (SolidColorBrush)new BrushConverter().ConvertFrom("#4D96FF");
 
         #region Constructors
 
@@ -48,7 +47,6 @@ namespace SimulationWindow
 
             this.Width = radius + radius;
             this.Height = radius + radius;
-            Fill = blue;
 
             //Position accordingly
             this.RenderTransform = new TranslateTransform
@@ -67,23 +65,41 @@ namespace SimulationWindow
             }
         }
 
+        /// <summary>
+        /// Moves the particle by a given velocity and deltaTime offset.
+        /// </summary>
+        /// <param name="deltaTime">Time to move the particle by.</param>
         public void Move(double deltaTime) => position += velocity * deltaTime;
 
+        /// <summary>
+        /// Draws the particle at a given position with it's center in the middle.
+        /// </summary>
         public void Draw() => this.RenderTransform = new TranslateTransform(position.x - radius, position.y - radius);
 
         #region Collisions Calculations
+
+        /// <summary>
+        /// Applies velocity to a particle based on the vertical wall collision. 
+        /// </summary>
         public void VerticalWallCollision()
         {
             velocity.x = (-velocity.x);
             count++;
         }
 
+        /// <summary>
+        /// Applies velocity to a particle based on the horizontal wall collision. 
+        /// </summary>
         public void HorizontalWallCollision()
         {
             velocity.y = (-velocity.y);
             count++;
         }
 
+        /// <summary>
+        /// Calculates the impulse and velocity between the two particles based on the laws of elastic collisions.
+        /// </summary>
+        /// <param name="p2">Particle to collide with.</param>
         public void ParticleCollision(Particle p2)
         {
             //Calculate Impulse
@@ -107,6 +123,11 @@ namespace SimulationWindow
 
         #region Collision Prediction Methods
 
+        /// <summary>
+        /// Calculates the time of next collision between the two particles.
+        /// </summary>
+        /// <param name="p1">Particle to calculate time with</param>
+        /// <returns>Time of collision between two particles</returns>
         public double timeToHitParticle(Particle p1)
         {
             if (this.Equals(p1)) return double.PositiveInfinity;
@@ -127,6 +148,11 @@ namespace SimulationWindow
             return -(deltaPosdeltaVel + Math.Sqrt(distance)) / deltaVelS;
         }
 
+
+        /// <summary>
+        /// Calculates time of collision with a vertical wall.
+        /// </summary>
+        /// <returns>Time of collison with a wall.</returns>
         public double timeToHitVerticalWall()
         {
             if (this.velocity.x == 0)
@@ -137,6 +163,10 @@ namespace SimulationWindow
             return Math.Abs((0 + this.position.x - this.radius) / this.velocity.x);
         }
 
+        /// <summary>
+        /// Calculates time of collision with a horizontal wall.
+        /// </summary>
+        /// <returns>Time of collison with a wall.</returns>
         public double timeToHitHorizontalWall()
         {
             if (this.velocity.y == 0)

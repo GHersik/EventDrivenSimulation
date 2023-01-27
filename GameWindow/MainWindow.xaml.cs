@@ -73,23 +73,20 @@ namespace SimulationWindow
             //Setup simulation
             Time.Tick += Update;
             Time.Interval = deltaTime;
-            Time.Start();
+            //Time.Start();
 
-            particles = IntializeParticles();
+            //max 1600
+            particles = IntializeParticles(300);
             collisionSystem = new EventDrivenCollisionSystem(particles, quantaTime);
         }
 
         private void Update(object sender, EventArgs e)
         {
-
             //Solver approach
             if (collisionSystem.NextCollision <= totalTimeElapsed)
             {
-
                 collisionSystem.Solver();
                 collisionSystem.CalculateNextCollision();
-
-
             }
             else
             {
@@ -98,11 +95,14 @@ namespace SimulationWindow
                     particles[i].Move(1);
                     particles[i].Draw();
                 }
-
             }
 
+            //for (int i = 0; i < particles.Length; i++)
+            //{
+            //    //particles[i].Move(1);
+            //    particles[i].Draw();
+            //}
 
-            totalTimeElapsed += deltaTime;
 
             //Fully Working
             //for (int i = 0; i < particles.Length; i++)
@@ -148,6 +148,8 @@ namespace SimulationWindow
 
             //both Particles
             DrawDistanceLine();
+
+            totalTimeElapsed += deltaTime;
         }
 
         #region Update UI Elements
@@ -259,8 +261,8 @@ namespace SimulationWindow
 
             velocityVectorp1.X1 = particle.position.x;
             velocityVectorp1.Y1 = particle.position.y;
-            velocityVectorp1.X2 = particle.position.x + particle.velocity.x * 6;
-            velocityVectorp1.Y2 = particle.position.y + particle.velocity.y * 6;
+            velocityVectorp1.X2 = particle.position.x + particle.velocity.x * 2 * particle.radius;
+            velocityVectorp1.Y2 = particle.position.y + particle.velocity.y * 2 * particle.radius;
 
             //Line main = new Line()
             //{
@@ -295,35 +297,37 @@ namespace SimulationWindow
         }
         #endregion
 
-        private Particle[] IntializeParticles()
+        private Particle[] IntializeParticles(int amountToSpawn)
         {
-            //Spawn 100 particles
-            Particle[] particles = new Particle[100];
-            double x = 25.1;
-            double y = 25.1;
+            Particle[] particles = new Particle[amountToSpawn + 1];
 
-            //max 16
-            int randomOffSet = 12;
+            //Spawn each n-th position
+            double x = 0;
+            double y = 6;
 
-            for (int i = 0; i < 100; i += 10)
+            //Position randomly off the center, max 16
+            int randomOffSet = 1;
+
+            //Position particles
+            for (int i = 0; i < particles.Length; i++)
             {
-                for (int j = 0; j < 10; j++)
+                if (i % 40 == 0)
                 {
-                    particles[i + j] = new Particle(new Vector2(x + rnd.Next(-randomOffSet, randomOffSet), y + rnd.Next(-randomOffSet, randomOffSet)),
-                        new Vector2(rnd.Next(-5, 5) * rnd.NextDouble(), rnd.Next(-5, 5) * rnd.NextDouble()), 8 / 2, 1);
-                    //{ Stroke = blue };
-                    Render.Children.Add(particles[i + j]);
-                    x += 50;
+                    y += 12;
+                    x = 18;
                 }
+                Vector2 position = new Vector2(x + rnd.Next(-randomOffSet, randomOffSet), y + rnd.Next(-randomOffSet, randomOffSet));
+                Vector2 velocity = new Vector2(rnd.NextDouble()* 2, rnd.NextDouble()* 2);
+                particles[i] = new Particle(position, velocity, 3, 1) { Fill = blue };
+                Render.Children.Add(particles[i]);
 
-                y += 50;
-                x = 25;
+                x += 12;
+
             }
 
-            //one big
-            //particles[100] = new Particle(new Vector2(250, 250), new Vector2(rnd.Next(-5, 5) * rnd.NextDouble(), rnd.Next(-5, 5) * rnd.NextDouble()), 52 / 2, 16)
-            //{ Stroke = yellow };
-            //Render.Children.Add(particles[100]);
+            //Big one
+            particles[100] = new Particle(new Vector2(250, 250), new Vector2(-1 * rnd.NextDouble(), 1 * rnd.NextDouble()), 26, 10) { Fill = yellow };
+            Render.Children.Add(particles[100]);
 
             ParticlesCounter.Text = Convert.ToString(particles.Length);
             return particles;

@@ -46,9 +46,8 @@ namespace SimulationWindow
 
         //Simulation time
         private readonly DispatcherTimer Time = new DispatcherTimer();
-        private static double stepTime = 20;
-        //private double dt = 0.03;
-        private TimeSpan fixedTime = TimeSpan.FromMilliseconds(stepTime);
+        private static double quantaTime = 30;
+        private TimeSpan deltaTime = TimeSpan.FromMilliseconds(quantaTime);
         private TimeSpan totalTimeElapsed = TimeSpan.Zero;
 
         //Particles
@@ -73,15 +72,38 @@ namespace SimulationWindow
 
             //Setup simulation
             Time.Tick += Update;
-            Time.Interval = fixedTime;
+            Time.Interval = deltaTime;
             Time.Start();
 
             particles = IntializeParticles();
-            collisionSystem = new EventDrivenCollisionSystem(particles, stepTime);
+            collisionSystem = new EventDrivenCollisionSystem(particles, quantaTime);
         }
 
         private void Update(object sender, EventArgs e)
         {
+
+            //Solver approach
+            if (collisionSystem.NextCollision <= totalTimeElapsed)
+            {
+
+                collisionSystem.Solver();
+                collisionSystem.CalculateNextCollision();
+
+
+            }
+            else
+            {
+                for (int i = 0; i < particles.Length; i++)
+                {
+                    particles[i].Move(1);
+                    particles[i].Draw();
+                }
+
+            }
+
+
+            totalTimeElapsed += deltaTime;
+
             //Fully Working
             //for (int i = 0; i < particles.Length; i++)
             //{
@@ -94,30 +116,30 @@ namespace SimulationWindow
 
 
             //Event Driven Simulation O(n log n), initialization O(N^2)
-            if (collisionSystem.nextCollision <= totalTimeElapsed)
-            {
-                for (int i = 0; i < particles.Length; i++)
-                {
-                    particles[i].Move(collisionSystem.offsetDeltaTime);
-                    particles[i].Draw();
-                }
+            //if (collisionSystem.NextCollision <= totalTimeElapsed)
+            //{
+            //    for (int i = 0; i < particles.Length; i++)
+            //    {
+            //        particles[i].Move(collisionSystem.offsetDeltaTime);
+            //        particles[i].Draw();
+            //    }
 
-                collisionSystem.ResolveCollision();
-                collisionSystem.CalculateNextCollision();
+            //    collisionSystem.ResolveCollision();
+            //    collisionSystem.CalculateNextCollisionTime();
 
-                totalTimeElapsed += fixedTime * collisionSystem.offsetDeltaTime;
-            }
-            else
-            {
+            //    totalTimeElapsed += fixedTime * collisionSystem.offsetDeltaTime;
+            //}
+            //else
+            //{
 
-                for (int i = 0; i < particles.Length; i++)
-                {
-                    particles[i].Move(1);
-                    particles[i].Draw();
-                }
+            //    for (int i = 0; i < particles.Length; i++)
+            //    {
+            //        particles[i].Move(1);
+            //        particles[i].Draw();
+            //    }
 
-                totalTimeElapsed += fixedTime;
-            }
+            //    totalTimeElapsed += fixedTime;
+            //}
 
             //Track each particle
             TrackParticle1Stats();
@@ -288,7 +310,7 @@ namespace SimulationWindow
                 for (int j = 0; j < 10; j++)
                 {
                     particles[i + j] = new Particle(new Vector2(x + rnd.Next(-randomOffSet, randomOffSet), y + rnd.Next(-randomOffSet, randomOffSet)),
-                        new Vector2(rnd.Next(-10, 10) * rnd.NextDouble(), rnd.Next(-10, 10) * rnd.NextDouble()), 8 / 2, 1);
+                        new Vector2(rnd.Next(-5, 5) * rnd.NextDouble(), rnd.Next(-5, 5) * rnd.NextDouble()), 8 / 2, 1);
                     //{ Stroke = blue };
                     Render.Children.Add(particles[i + j]);
                     x += 50;

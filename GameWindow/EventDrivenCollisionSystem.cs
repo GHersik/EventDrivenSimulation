@@ -10,25 +10,30 @@ namespace SimulationRender
     public class EventDrivenCollisionSystem
     {
         private PriorityQueue<Event, double> collisionQueue = new PriorityQueue<Event, double>();
-        private double time = 0;
-        private double stepTime = 0;
-        public double offsetDeltaTime = 1;
         private readonly Particle[] particles;
+        private double time = 0;
+        private double quantaTime = 0;
+        //public double offsetDeltaTime = 1;
 
-        public double updateCount = 0;
+        private TimeSpan nextCollsion;
+        public TimeSpan NextCollision
+        {
+            get { return nextCollsion; }
+            private set { nextCollsion = value; }
+        }
 
-        public TimeSpan nextCollision = TimeSpan.Zero;
         private Event? currentEvent;
 
         public EventDrivenCollisionSystem(Particle[] particles, double stepTime)
         {
             this.particles = particles;
-            this.stepTime = stepTime;
+            this.quantaTime = stepTime;
+            nextCollsion = TimeSpan.Zero;
 
             for (int i = 0; i < particles.Length; i++)
                 PredictCollisions(particles[i]);
 
-            //collisionQueue.Enqueue(new Event(0, null, null), 0);
+            //CalculateNextCollisionTime();
             CalculateNextCollision();
         }
 
@@ -40,7 +45,6 @@ namespace SimulationRender
         /// <param name="p1">Particle to be evaluated</param>
         private void PredictCollisions(Particle p1)
         {
-            //N + 2 events added to the PQ at worst
             if (p1 == null) return;
 
             for (int i = 0; i < particles.Length; i++)
@@ -86,13 +90,18 @@ namespace SimulationRender
         //    }
         //}
 
-        public void CalculateNextCollision()
+
+
+        public void CalculateNextCollisionTime()
         {
             while (collisionQueue.Count > 0)
             {
                 currentEvent = collisionQueue.Dequeue();
                 if (!currentEvent.isValid()) continue;
 
+                //New with solver, need to calculate time.floor and assign
+                //time = currentEvent.time;
+                //nextCollsion = TimeSpan.FromMilliseconds(Math.Floor(time) * stepTime);
 
 
                 //updateCount = currentEvent.time - time;
@@ -104,11 +113,11 @@ namespace SimulationRender
                 ////double updatesCount = Math.Floor(currentEvent.time - time);
                 ////double deltaTime = Math.Truncate((currentEvent.time - time) * 1000) / 1000;
                 ////offsetDeltaTime = (currentEvent.time - time) / Math.Ceiling(currentEvent.time - time);
-                offsetDeltaTime = (currentEvent.time - time) - Math.Floor(currentEvent.time - time);
+                //offsetDeltaTime = (currentEvent.time - time) - Math.Floor(currentEvent.time - time);
                 time = currentEvent.time;
 
                 //time - time before next collision
-                nextCollision = TimeSpan.FromMilliseconds(time * stepTime - stepTime);
+                nextCollsion = TimeSpan.FromMilliseconds(time * quantaTime - quantaTime);
 
                 break;
             }
@@ -125,6 +134,89 @@ namespace SimulationRender
 
             PredictCollisions(currentEvent.p1);
             PredictCollisions(currentEvent.p2);
+        }
+
+
+        //Different approach
+
+        /// <summary>
+        /// Calculates t time of another collision on the queue.
+        /// </summary>
+        public void CalculateNextCollision()
+        {
+            while (!collisionQueue.Peek().isValid())
+                collisionQueue.Dequeue();
+
+            time = collisionQueue.Peek().time;
+            nextCollsion = TimeSpan.FromMilliseconds(time * quantaTime - quantaTime);
+        }
+
+        /// <summary>
+        /// Solves all the possible collisions at a t time, also those that would occur between the new collisions
+        /// </summary>
+        /// <param name="t"></param>
+        public void Solver()
+        {
+            double t = Math.Ceiling(time);
+            double offsetDeltaTime = Math.Floor(time);
+
+            while (collisionQueue.Peek().time < t)
+            {
+                Event currentEvent = collisionQueue.Dequeue();
+                if (!currentEvent.isValid()) continue;
+
+                //Calculate time and move particles towards collision destination
+                //double difference = currentEvent.time - time;
+                //double offsetDeltaTime = difference - Math.Floor(difference);
+                //double offsetDeltaTime = (currentEvent.time - time) - Math.Floor(currentEvent.time - time);
+
+                //offsetDeltaTime = (currentEvent.time - time) - Math.Floor(currentEvent.time - time);
+                offsetDeltaTime = currentEvent.time - offsetDeltaTime;
+
+                for (int i = 0; i < particles.Length; i++)
+                    particles[i].Move(offsetDeltaTime);
+
+
+                //double offsetDeltaTime = Math.Abs(currentEvent.time - t);
+                //if (currentEvent.p1 != null)
+                //{
+                //    currentEvent.p1.Move(offsetDeltaTime);
+                //    currentEvent.p1.Draw();
+                //}
+
+                //if (currentEvent.p2 != null)
+                //{
+                //    currentEvent.p2.Move(offsetDeltaTime);
+                //    currentEvent.p2.Draw();
+                //}
+
+                time = currentEvent.time;
+                offsetDeltaTime = currentEvent.time;
+
+                //Resolve collision
+                ResolveCollision(currentEvent);
+
+                //Predict future collisions and add those to the queue
+                PredictCollisions(currentEvent.p1);
+                PredictCollisions(currentEvent.p2);
+            }
+
+            offsetDeltaTime = t - offsetDeltaTime;
+            for (int i = 0; i < particles.Length; i++)
+            {
+                particles[i].Move(offsetDeltaTime);
+                particles[i].Draw();
+            }
+        }
+
+        private void ResolveCollision(Event collision)
+        {
+            if (collision.p1 != null && collision.p2 != null)
+                collision.p1.ParticleCollision(collision.p2);
+            else if (collision.p1 != null && collision.p2 == null)
+                collision.p1.VerticalWallCollision();
+            else if (collision.p1 == null && collision.p2 != null)
+                collision.p2.HorizontalWallCollision();
         }
     }
 }

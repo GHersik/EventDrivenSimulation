@@ -1,4 +1,5 @@
-﻿using System;
+﻿global using EventDrivenSimulationLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,8 +20,8 @@ using System.Threading;
 using SimulationRender;
 using SimulationRender.Properties;
 using System.Globalization;
-using EventDrivenSimulationLibrary;
 using System.Drawing;
+using System.Reflection;
 
 namespace SimulationWindow
 {
@@ -76,7 +77,7 @@ namespace SimulationWindow
             //Time.Start();
 
             //max 1600
-            particles = IntializeParticles(300);
+            particles = IntializeParticles(20);
             collisionSystem = new EventDrivenCollisionSystem(particles, quantaTime);
         }
 
@@ -97,57 +98,15 @@ namespace SimulationWindow
                 }
             }
 
-            //for (int i = 0; i < particles.Length; i++)
-            //{
-            //    //particles[i].Move(1);
-            //    particles[i].Draw();
-            //}
-
-
-            //Fully Working
-            //for (int i = 0; i < particles.Length; i++)
-            //{
-            //    particles[i].Move(collisionSystem.updateCount);
-            //    particles[i].Draw();
-            //}
-
-            //collisionSystem.ResolveCollision();
-            //collisionSystem.CalculateNextCollision();
-
-
-            //Event Driven Simulation O(n log n), initialization O(N^2)
-            //if (collisionSystem.NextCollision <= totalTimeElapsed)
-            //{
-            //    for (int i = 0; i < particles.Length; i++)
-            //    {
-            //        particles[i].Move(collisionSystem.offsetDeltaTime);
-            //        particles[i].Draw();
-            //    }
-
-            //    collisionSystem.ResolveCollision();
-            //    collisionSystem.CalculateNextCollisionTime();
-
-            //    totalTimeElapsed += fixedTime * collisionSystem.offsetDeltaTime;
-            //}
-            //else
-            //{
-
-            //    for (int i = 0; i < particles.Length; i++)
-            //    {
-            //        particles[i].Move(1);
-            //        particles[i].Draw();
-            //    }
-
-            //    totalTimeElapsed += fixedTime;
-            //}
-
             //Track each particle
-            TrackParticle1Stats();
-            TrackParticle2Stats();
+            TrackParticles();
             DrawVector(p1);
 
             //both Particles
             DrawDistanceLine();
+
+            //TrackCollisions
+            CollisionsPerSecond();
 
             totalTimeElapsed += deltaTime;
         }
@@ -161,7 +120,7 @@ namespace SimulationWindow
                 p1text.RenderTransform = new TranslateTransform(p1.position.x - (p1.Width), p1.position.y - (p1.Height + p1.Height));
                 DrawDistanceLine();
                 DrawVector(p1);
-                TrackParticle1Stats();
+                TrackParticles();
 
                 //Show UI
                 Particle1.Visibility = Visibility.Visible;
@@ -179,9 +138,8 @@ namespace SimulationWindow
             }
 
         }
-        private void TrackParticle1Stats()
+        private void TrackParticles()
         {
-            //p1 position
             if (p1 != null)
             {
                 p1Position.Text = $"({p1.position.x.ToString("00.00")} , {p1.position.y.ToString("00.00")})";
@@ -191,6 +149,16 @@ namespace SimulationWindow
 
                 p1text.RenderTransform = new TranslateTransform(p1.position.x - (p1.radius + 10), p1.position.y - (p1.radius + 20));
             }
+
+            if (p2 != null)
+            {
+                particle2Position.Text = $"({p2.position.x.ToString("00.00")} , {p2.position.y.ToString("00.00")})";
+                particle2Velocity.Text = $"({p2.velocity.x.ToString("00.00")} , {p2.velocity.y.ToString("00.00")})";
+                particle2Radius.Text = p2.radius.ToString();
+                particle2Mass.Text = p2.mass.ToString();
+
+                p2text.RenderTransform = new TranslateTransform(p2.position.x - (p2.Width + 10), p2.position.y - (p2.Height + 20));
+            }
         }
         private void TrackParticlep2(object sender, MouseButtonEventArgs e)
         {
@@ -199,7 +167,7 @@ namespace SimulationWindow
                 p2 = (Particle)e.OriginalSource;
                 p2text.RenderTransform = new TranslateTransform(p2.position.x - (p2.Width), p2.position.y - (p2.Height + p2.Height));
                 DrawDistanceLine();
-                TrackParticle2Stats();
+                TrackParticles();
 
                 //Show UI
                 Particle2.Visibility = Visibility.Visible;
@@ -213,19 +181,6 @@ namespace SimulationWindow
                 //Hide UI
                 Particle2.Visibility = Visibility.Hidden;
                 p2text.Visibility = Visibility.Hidden;
-            }
-        }
-        private void TrackParticle2Stats()
-        {
-            //p2 position
-            if (p2 != null)
-            {
-                particle2Position.Text = $"({p2.position.x.ToString("00.00")} , {p2.position.y.ToString("00.00")})";
-                particle2Velocity.Text = $"({p2.velocity.x.ToString("00.00")} , {p2.velocity.y.ToString("00.00")})";
-                particle2Radius.Text = p2.radius.ToString();
-                particle2Mass.Text = p2.mass.ToString();
-
-                p2text.RenderTransform = new TranslateTransform(p2.position.x - (p2.Width + 10), p2.position.y - (p2.Height + 20));
             }
         }
         private void DrawDistanceLine()
@@ -295,18 +250,24 @@ namespace SimulationWindow
             //Render.Children.Add(main);
             //Render.Children.Add(left);
         }
+        private void CollisionsPerSecond() => CollisionsCounter.Text = (collisionSystem.CollisionCounter / totalTimeElapsed.TotalSeconds).ToString("00.00");
         #endregion
 
-        private Particle[] IntializeParticles(int amountToSpawn)
+
+        /// <summary>
+        /// Initializes one big and lots of small particles with increased velocity.
+        /// </summary>
+        /// <returns></returns>
+        private Particle[] BrownianMotion()
         {
-            Particle[] particles = new Particle[amountToSpawn + 1];
+            Particle[] particles = new Particle[400];
 
             //Spawn each n-th position
             double x = 0;
             double y = 6;
 
-            //Position randomly off the center, max 16
-            int randomOffSet = 1;
+            //Position randomly off the center
+            int randomOffSet = 0;
 
             //Position particles
             for (int i = 0; i < particles.Length; i++)
@@ -317,22 +278,55 @@ namespace SimulationWindow
                     x = 18;
                 }
                 Vector2 position = new Vector2(x + rnd.Next(-randomOffSet, randomOffSet), y + rnd.Next(-randomOffSet, randomOffSet));
-                Vector2 velocity = new Vector2(rnd.NextDouble()* 2, rnd.NextDouble()* 2);
-                particles[i] = new Particle(position, velocity, 3, 1) { Fill = blue };
+                Vector2 velocity = new Vector2(rnd.NextDouble() * 2, rnd.NextDouble() * 2);
+                particles[i] = new Particle(position, velocity, 2, 1) { Fill = blue, Stroke = blue, StrokeThickness = 2 };
                 Render.Children.Add(particles[i]);
 
                 x += 12;
-
             }
 
             //Big one
             particles[100] = new Particle(new Vector2(250, 250), new Vector2(-1 * rnd.NextDouble(), 1 * rnd.NextDouble()), 26, 10) { Fill = yellow };
+            Render.Children.Remove(particles[100]);
             Render.Children.Add(particles[100]);
 
             ParticlesCounter.Text = Convert.ToString(particles.Length);
             return particles;
         }
 
+        private Particle[] IntializeParticles(int amountToSpawn)
+        {
+            //Max 1600
+            Particle[] particles = new Particle[amountToSpawn];
+
+            //Spawn each n-th position
+            double x = 0;
+            double y = 6;
+
+            //Position randomly off the center, max 16
+            int randomOffSet = 0;
+
+            //Position particles
+            for (int i = 0; i < particles.Length; i++)
+            {
+                if (i % 40 == 0)
+                {
+                    y += 12;
+                    x = 18;
+                }
+                Vector2 position = new Vector2(x + rnd.Next(-randomOffSet, randomOffSet), y + rnd.Next(-randomOffSet, randomOffSet));
+                Vector2 velocity = new Vector2(rnd.NextDouble() * 1, rnd.NextDouble() * 1);
+                particles[i] = new Particle(position, velocity, 2, 1) { Fill = blue, Stroke = blue, StrokeThickness = 2 };
+                Render.Children.Add(particles[i]);
+
+                x += 12;
+            }
+
+            ParticlesCounter.Text = Convert.ToString(particles.Length);
+            return particles;
+        }
+
+        #region Buttons
         private void TimeButton_Click(object sender, RoutedEventArgs e)
         {
             if (Time.IsEnabled)
@@ -346,5 +340,33 @@ namespace SimulationWindow
                 Time.Start();
             }
         }
+
+        private void NextButton_Click(object sender, RoutedEventArgs e)
+        {
+            ResetSimulation();
+
+
+            particles = BrownianMotion();
+            collisionSystem = new EventDrivenCollisionSystem(particles, quantaTime);
+        }
+
+        /// <summary>
+        /// Resets the entire simulation to a point where no particles are on a scene.
+        /// </summary>
+        private void ResetSimulation()
+        {
+            Time.Stop();
+            p1 = null;
+            p2 = null;
+
+
+            totalTimeElapsed = TimeSpan.Zero;
+            for (int i = 0; i < particles.Length; i++)
+                Render.Children.Remove(particles[i]);
+
+            particles = null;
+            collisionSystem = null;
+        }
+        #endregion
     }
 }

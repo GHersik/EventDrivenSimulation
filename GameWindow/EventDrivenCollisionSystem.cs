@@ -15,6 +15,14 @@ namespace SimulationRender
         private double quantaTime = 0;
         //public double offsetDeltaTime = 1;
 
+        private long collisionCounter;
+
+        public long CollisionCounter
+        {
+            get { return collisionCounter; }
+            private set { collisionCounter = value; }
+        }
+
         private TimeSpan nextCollsion;
         public TimeSpan NextCollision
         {
@@ -199,6 +207,8 @@ namespace SimulationRender
                 //Predict future collisions and add those to the queue
                 PredictCollisions(currentEvent.p1);
                 PredictCollisions(currentEvent.p2);
+
+                CollisionCounter++;
             }
 
             //Final position of all the particles at t + 1 time

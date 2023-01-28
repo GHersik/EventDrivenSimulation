@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace SimulationRender
 {
+    /// <summary>
+    /// In other words collision at a t time between particles or particles and wall along with n collisions stored for each at the time of calculating this event.
+    /// </summary>
     public class Event
     {
         public double time = 0;
@@ -23,6 +26,10 @@ namespace SimulationRender
             if (p2 != null) countp2 = p2.count;
         }
 
+        /// <summary>
+        /// Checks if no collisions have happened between queuing and dequeuing this event.
+        /// </summary>
+        /// <returns>True if no collisions have happened.</returns>
         public bool isValid()
         {
             if (p1 != null && p2 != null) return (p1.count == countp1 && p2.count == countp2);

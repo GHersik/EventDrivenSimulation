@@ -25,18 +25,15 @@ using System.Reflection;
 
 namespace SimulationWindow
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         //Color palette
-        static SolidColorBrush green = (SolidColorBrush)new BrushConverter().ConvertFrom("#6BCB77");
-        static SolidColorBrush yellow = (SolidColorBrush)new BrushConverter().ConvertFrom("#FFD93D");
-        static SolidColorBrush red = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF6B6B");
+        private static SolidColorBrush green = (SolidColorBrush)new BrushConverter().ConvertFrom("#6BCB77");
+        private static SolidColorBrush yellow = (SolidColorBrush)new BrushConverter().ConvertFrom("#FFD93D");
+        private static SolidColorBrush red = (SolidColorBrush)new BrushConverter().ConvertFrom("#FF6B6B");
         private static SolidColorBrush blue = (SolidColorBrush)new BrushConverter().ConvertFrom("#4D96FF");
 
-        private readonly Random rnd = new Random();
+        private static readonly Random rnd = new Random();
 
         //UI elements
         Line distanceBetweenParticles = new Line() { Stroke = green, StrokeThickness = 2 };
@@ -74,16 +71,14 @@ namespace SimulationWindow
             //Setup simulation
             Time.Tick += Update;
             Time.Interval = deltaTime;
-            //Time.Start();
 
-            //max 1600
-            particles = IntializeParticles(20);
+            //Intialize collision system
+            particles = IntializeParticles(1600);
             collisionSystem = new EventDrivenCollisionSystem(particles, quantaTime);
         }
 
         private void Update(object sender, EventArgs e)
         {
-            //Solver approach
             if (collisionSystem.NextCollision <= totalTimeElapsed)
             {
                 collisionSystem.Solver();
@@ -100,10 +95,6 @@ namespace SimulationWindow
 
             //Track each particle
             TrackParticles();
-            DrawVector(p1);
-
-            //both Particles
-            DrawDistanceLine();
 
             //TrackCollisions
             CollisionsPerSecond();
@@ -112,32 +103,64 @@ namespace SimulationWindow
         }
 
         #region Update UI Elements
-        private void TrackParticlep1(object sender, MouseButtonEventArgs e)
-        {
-            if (e.OriginalSource is Particle)
-            {
-                p1 = (Particle)e.OriginalSource;
-                p1text.RenderTransform = new TranslateTransform(p1.position.x - (p1.Width), p1.position.y - (p1.Height + p1.Height));
-                DrawDistanceLine();
-                DrawVector(p1);
-                TrackParticles();
 
-                //Show UI
+        /// <summary>
+        /// Shows or hides particle statistics along with the distance between the two.
+        /// </summary>
+        private void ShowHideUI()
+        {
+            if (p1 != null)
+            {
                 Particle1.Visibility = Visibility.Visible;
                 p1text.Visibility = Visibility.Visible;
             }
             else
             {
-                p1 = null;
-                DrawDistanceLine();
-                DrawVector(p1);
-
-                //Hide UI
                 Particle1.Visibility = Visibility.Hidden;
                 p1text.Visibility = Visibility.Hidden;
             }
 
+            if (p2 != null)
+            {
+                Particle2.Visibility = Visibility.Visible;
+                p2text.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                Particle2.Visibility = Visibility.Hidden;
+                p2text.Visibility = Visibility.Hidden;
+            }
+
+            if (p1 == null || p2 == null)
+                distanceBetweenParticles.Visibility = Visibility.Hidden;
+            else
+                distanceBetweenParticles.Visibility = Visibility.Visible;
+
         }
+
+        /// <summary>
+        /// Resets the entire simulation to a point where no particles are on a scene.
+        /// </summary>
+        private void ResetSimulation()
+        {
+            Time.Stop();
+            p1 = null;
+            p2 = null;
+            ShowHideUI();
+
+            totalTimeElapsed = TimeSpan.Zero;
+            CollisionsPerSecond();
+
+            for (int i = 0; i < particles.Length; i++)
+                Render.Children.Remove(particles[i]);
+
+            particles = null;
+            collisionSystem = null;
+        }
+
+        /// <summary>
+        /// Track particles statistics and the distance between them.
+        /// </summary>
         private void TrackParticles()
         {
             if (p1 != null)
@@ -157,34 +180,9 @@ namespace SimulationWindow
                 particle2Radius.Text = p2.radius.ToString();
                 particle2Mass.Text = p2.mass.ToString();
 
-                p2text.RenderTransform = new TranslateTransform(p2.position.x - (p2.Width + 10), p2.position.y - (p2.Height + 20));
+                p2text.RenderTransform = new TranslateTransform(p2.position.x - (p2.radius + 10), p2.position.y - (p2.radius + 20));
             }
-        }
-        private void TrackParticlep2(object sender, MouseButtonEventArgs e)
-        {
-            if (e.OriginalSource is Particle)
-            {
-                p2 = (Particle)e.OriginalSource;
-                p2text.RenderTransform = new TranslateTransform(p2.position.x - (p2.Width), p2.position.y - (p2.Height + p2.Height));
-                DrawDistanceLine();
-                TrackParticles();
 
-                //Show UI
-                Particle2.Visibility = Visibility.Visible;
-                p2text.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                p2 = null;
-                DrawDistanceLine();
-
-                //Hide UI
-                Particle2.Visibility = Visibility.Hidden;
-                p2text.Visibility = Visibility.Hidden;
-            }
-        }
-        private void DrawDistanceLine()
-        {
             if (p1 != null && p2 != null)
             {
                 distanceBetweenParticles.X1 = p1.position.x;
@@ -193,14 +191,44 @@ namespace SimulationWindow
                 distanceBetweenParticles.X2 = p2.position.x;
                 distanceBetweenParticles.Y2 = p2.position.y;
             }
-            else
-            {
-                distanceBetweenParticles.X1 = 0;
-                distanceBetweenParticles.Y1 = 0;
+        }
 
-                distanceBetweenParticles.X2 = 0;
-                distanceBetweenParticles.Y2 = 0;
+        /// <summary>
+        ///On click track the first particle.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TrackParticlep1(object sender, MouseButtonEventArgs e)
+        {
+            if (e.OriginalSource is Particle)
+            {
+                p1 = (Particle)e.OriginalSource;
+                DrawVector(p1);
             }
+            else
+                p1 = null;
+
+            TrackParticles();
+            ShowHideUI();
+        }
+
+        /// <summary>
+        /// On click track the second particle.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TrackParticlep2(object sender, MouseButtonEventArgs e)
+        {
+            if (e.OriginalSource is Particle)
+            {
+                p2 = (Particle)e.OriginalSource;
+            }
+            else
+                p2 = null;
+
+
+            TrackParticles();
+            ShowHideUI();
         }
         private void DrawVector(Particle particle)
         {
@@ -250,10 +278,14 @@ namespace SimulationWindow
             //Render.Children.Add(main);
             //Render.Children.Add(left);
         }
+
+        /// <summary>
+        /// Calculates and displays collisions per second.
+        /// </summary>
         private void CollisionsPerSecond() => CollisionsCounter.Text = (collisionSystem.CollisionCounter / totalTimeElapsed.TotalSeconds).ToString("00.00");
         #endregion
 
-
+        #region Simulations
         /// <summary>
         /// Initializes one big and lots of small particles with increased velocity.
         /// </summary>
@@ -278,7 +310,7 @@ namespace SimulationWindow
                     x = 18;
                 }
                 Vector2 position = new Vector2(x + rnd.Next(-randomOffSet, randomOffSet), y + rnd.Next(-randomOffSet, randomOffSet));
-                Vector2 velocity = new Vector2(rnd.NextDouble() * 2, rnd.NextDouble() * 2);
+                Vector2 velocity = new Vector2(rnd.Next(0, 2) * 2 - 1 * rnd.NextDouble() * 2, rnd.Next(0, 2) * 2 - 1 * rnd.NextDouble() * 2);
                 particles[i] = new Particle(position, velocity, 2, 1) { Fill = blue, Stroke = blue, StrokeThickness = 2 };
                 Render.Children.Add(particles[i]);
 
@@ -286,7 +318,7 @@ namespace SimulationWindow
             }
 
             //Big one
-            particles[100] = new Particle(new Vector2(250, 250), new Vector2(-1 * rnd.NextDouble(), 1 * rnd.NextDouble()), 26, 10) { Fill = yellow };
+            particles[100] = new Particle(new Vector2(250, 250), new Vector2(rnd.Next(0, 2) * 2 - 1 * rnd.NextDouble(), rnd.Next(0, 2) * 2 - 1 * rnd.NextDouble()), 26, 10) { Fill = yellow };
             Render.Children.Remove(particles[100]);
             Render.Children.Add(particles[100]);
 
@@ -315,7 +347,7 @@ namespace SimulationWindow
                     x = 18;
                 }
                 Vector2 position = new Vector2(x + rnd.Next(-randomOffSet, randomOffSet), y + rnd.Next(-randomOffSet, randomOffSet));
-                Vector2 velocity = new Vector2(rnd.NextDouble() * 1, rnd.NextDouble() * 1);
+                Vector2 velocity = new Vector2(rnd.Next(0, 2) * 2 - 1 * rnd.NextDouble() * 1, rnd.Next(0, 2) * 2 - 1 * rnd.NextDouble() * 1);
                 particles[i] = new Particle(position, velocity, 2, 1) { Fill = blue, Stroke = blue, StrokeThickness = 2 };
                 Render.Children.Add(particles[i]);
 
@@ -326,7 +358,15 @@ namespace SimulationWindow
             return particles;
         }
 
+        #endregion
+
         #region Buttons
+
+        /// <summary>
+        /// Button which either stops or starts the time.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TimeButton_Click(object sender, RoutedEventArgs e)
         {
             if (Time.IsEnabled)
@@ -350,23 +390,7 @@ namespace SimulationWindow
             collisionSystem = new EventDrivenCollisionSystem(particles, quantaTime);
         }
 
-        /// <summary>
-        /// Resets the entire simulation to a point where no particles are on a scene.
-        /// </summary>
-        private void ResetSimulation()
-        {
-            Time.Stop();
-            p1 = null;
-            p2 = null;
 
-
-            totalTimeElapsed = TimeSpan.Zero;
-            for (int i = 0; i < particles.Length; i++)
-                Render.Children.Remove(particles[i]);
-
-            particles = null;
-            collisionSystem = null;
-        }
         #endregion
     }
 }

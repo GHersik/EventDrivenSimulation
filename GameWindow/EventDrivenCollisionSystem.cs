@@ -7,16 +7,17 @@ using System.Threading.Tasks;
 
 namespace SimulationRender
 {
+    /// <summary>
+    /// Collision based system which uses Priority Queue at it's core to store every future collision between every particle and wall on a scene.
+    /// </summary>
     public class EventDrivenCollisionSystem
     {
         private PriorityQueue<Event, double> collisionQueue = new PriorityQueue<Event, double>();
         private readonly Particle[] particles;
         private double time = 0;
         private double quantaTime = 0;
-        //public double offsetDeltaTime = 1;
 
         private long collisionCounter;
-
         public long CollisionCounter
         {
             get { return collisionCounter; }
@@ -29,8 +30,6 @@ namespace SimulationRender
             get { return nextCollsion; }
             private set { nextCollsion = value; }
         }
-
-        //private Event? currentEvent;
 
         public EventDrivenCollisionSystem(Particle[] particles, double quantaTime)
         {
@@ -70,82 +69,6 @@ namespace SimulationRender
                 collisionQueue.Enqueue(new Event(deltaTimeHWall, null, p1), deltaTimeHWall);
         }
 
-        //public void Simulation()
-        //{
-        //    while (collisionQueue.Count > 0)
-        //    {
-        //        Event currentEvent = collisionQueue.Dequeue();
-        //        if (currentEvent.isValid()) continue;
-
-        //        //todo
-        //        for (int i = 0; i < particles.Length; i++)
-        //            particles[i].Move(currentEvent.time - time);
-
-        //        time = currentEvent.time;
-
-        //        if (currentEvent.p1 != null && currentEvent.p2 != null)         //Null evaluation logic
-        //            currentEvent.p1.ParticleCollision(currentEvent.p2);         //if both are not null calculate particle - particle collision
-        //        else if (currentEvent.p1 != null && currentEvent.p2 == null)
-        //            currentEvent.p1.VerticalWallCollision();                    //if the first one is not null calculate the vertical wall collision
-        //        else if (currentEvent.p1 == null && currentEvent.p2 != null)
-        //            currentEvent.p2.HorizontalWallCollision();                  //if the second one is not null calculate the horizontal wall collision
-        //        else if (currentEvent.p1 == null && currentEvent.p2 == null)
-        //            continue;                                                   //both null, get another event, no collision
-
-        //        PredictCollisions(currentEvent.p1);                             //Predict future collisions for those two particles
-        //        PredictCollisions(currentEvent.p2);
-        //    }
-        //}
-
-
-
-        //public void CalculateNextCollisionTime()
-        //{
-        //    while (collisionQueue.Count > 0)
-        //    {
-        //        currentEvent = collisionQueue.Dequeue();
-        //        if (!currentEvent.isValid()) continue;
-
-        //        //New with solver, need to calculate time.floor and assign
-        //        //time = currentEvent.time;
-        //        //nextCollsion = TimeSpan.FromMilliseconds(Math.Floor(time) * stepTime);
-
-
-        //        //updateCount = currentEvent.time - time;
-        //        //time = currentEvent.time;
-
-
-
-
-        //        ////double updatesCount = Math.Floor(currentEvent.time - time);
-        //        ////double deltaTime = Math.Truncate((currentEvent.time - time) * 1000) / 1000;
-        //        ////offsetDeltaTime = (currentEvent.time - time) / Math.Ceiling(currentEvent.time - time);
-        //        //offsetDeltaTime = (currentEvent.time - time) - Math.Floor(currentEvent.time - time);
-        //        time = currentEvent.time;
-
-        //        //time - time before next collision
-        //        nextCollsion = TimeSpan.FromMilliseconds(time * quantaTime - quantaTime);
-
-        //        break;
-        //    }
-        //}
-
-        //public void ResolveCollision()
-        //{
-        //    if (currentEvent.p1 != null && currentEvent.p2 != null)
-        //        currentEvent.p1.ParticleCollision(currentEvent.p2);
-        //    else if (currentEvent.p1 != null && currentEvent.p2 == null)
-        //        currentEvent.p1.VerticalWallCollision();
-        //    else if (currentEvent.p1 == null && currentEvent.p2 != null)
-        //        currentEvent.p2.HorizontalWallCollision();
-
-        //    PredictCollisions(currentEvent.p1);
-        //    PredictCollisions(currentEvent.p2);
-        //}
-
-
-        //Different approach
-
         /// <summary>
         /// Calculates time of another collision on the queue.
         /// </summary>
@@ -173,30 +96,10 @@ namespace SimulationRender
                 Event currentEvent = collisionQueue.Dequeue();
                 if (!currentEvent.isValid()) continue;
 
-                //Calculate time and move particles towards collision destination
-                //double difference = currentEvent.time - time;
-                //double offsetDeltaTime = difference - Math.Floor(difference);
-                //double offsetDeltaTime = (currentEvent.time - time) - Math.Floor(currentEvent.time - time);
-
-                //offsetDeltaTime = (currentEvent.time - time) - Math.Floor(currentEvent.time - time);
                 offsetDeltaTime = currentEvent.time - offsetDeltaTime;
 
                 for (int i = 0; i < particles.Length; i++)
                     particles[i].Move(offsetDeltaTime);
-
-
-                //double offsetDeltaTime = Math.Abs(currentEvent.time - t);
-                //if (currentEvent.p1 != null)
-                //{
-                //    currentEvent.p1.Move(offsetDeltaTime);
-                //    currentEvent.p1.Draw();
-                //}
-
-                //if (currentEvent.p2 != null)
-                //{
-                //    currentEvent.p2.Move(offsetDeltaTime);
-                //    currentEvent.p2.Draw();
-                //}
 
                 time = currentEvent.time;
                 offsetDeltaTime = currentEvent.time;

@@ -16,7 +16,7 @@
         <TextBlock x:Name="ParticlesCounter" FontSize="14" Foreground="#FFFFD93D"  FontWeight="bold"   Canvas.Top="-38" TextAlignment="left"  TextWrapping="WrapWithOverflow" Height="25" Width="50" Canvas.Left="-213" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Roboto Mono"><Run Language="pl-pl" Text="0"/></TextBlock>
         <!--Collisions per second-->
         <TextBlock  FontSize="14" Foreground="White"  FontWeight="bold"   Canvas.Top="-16" TextAlignment="left"  TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" Height="25" VerticalAlignment="Top" Width="162" Canvas.Left="-351" FontFamily="Roboto Mono">Collisions per second</TextBlock>
-        <TextBlock x:Name="CollisionsCounter" FontSize="14" Foreground="#FFFFD93D"  FontWeight="bold"   Canvas.Top="-16" TextAlignment="left"  TextWrapping="WrapWithOverflow" Height="25" Width="65" Canvas.Left="-205" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Roboto Mono"><Run Language="pl-pl" Text="00.00"/></TextBlock>
+        <TextBlock x:Name="CollisionsCounter" FontSize="14" Foreground="#FFFFD93D"  FontWeight="bold"   Canvas.Top="-16" TextAlignment="left"  TextWrapping="WrapWithOverflow" Height="25" Width="65" Canvas.Left="-205" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Roboto Mono"><Run Language="pl-pl" Text="∞"/></TextBlock>
 
         <!--Matrix-->
         <Rectangle Name="Simulationborder" Width="504" Height="504" Canvas.Left="-2" StrokeThickness="3" Stroke="#FF4D96FF" Canvas.Top="-2" HorizontalAlignment="Left" VerticalAlignment="Top"/>

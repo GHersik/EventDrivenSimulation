@@ -121,6 +121,8 @@ namespace SimulationRender
                 particles[i].Move(offsetDeltaTime);
                 particles[i].Draw();
             }
+
+            //Can be further optimized
         }
 
         /// <summary>

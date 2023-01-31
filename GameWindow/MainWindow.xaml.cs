@@ -22,6 +22,7 @@ using SimulationRender.Properties;
 using System.Globalization;
 using System.Drawing;
 using System.Reflection;
+using System.Windows.Media.TextFormatting;
 
 namespace SimulationWindow
 {
@@ -48,7 +49,7 @@ namespace SimulationWindow
         TextBlock p1text = new TextBlock() { Text = "p1", Foreground = yellow, FontSize = 14, FontWeight = FontWeights.Bold, Visibility = Visibility.Hidden };
         TextBlock p2text = new TextBlock() { Text = "p2", Foreground = yellow, FontSize = 14, FontWeight = FontWeights.Bold, Visibility = Visibility.Hidden };
         //Velocity Vectors p1
-        Line vectorVelp1 = new Line() { StrokeThickness = 2, Stroke = transparentToRed }; //Visibility = Visibility.Visible};
+        Line vectorVelp1 = new Line() { StrokeThickness = 2, Stroke = transparentToRed };
         Line vectorVelp1Right = new Line() { StrokeThickness = 2, Stroke = red };
         Line vectorVelp1Left = new Line() { StrokeThickness = 2, Stroke = red };
         //p2
@@ -71,7 +72,8 @@ namespace SimulationWindow
         private Particle? p2 = null;
 
         //Event driven collision logic
-        EventDrivenCollisionSystem collisionSystem;
+        private EventDrivenCollisionSystem collisionSystem;
+        private List<ParticleDelegate> simulationsList = new List<ParticleDelegate>();
 
         public MainWindow()
         {
@@ -98,9 +100,20 @@ namespace SimulationWindow
             Time.Tick += Update;
             Time.Interval = deltaTime;
 
-            //Intialize collision system
-            particles = IntializeParticles(600);
+            //List of available simulations
+            simulationsList.Add(Simulations.Ambient);
+            simulationsList.Add(Simulations.BrownianMotion);
+            simulationsList.Add(Simulations.FastParticles);
+
+            //Intialize program
+            particles = simulationsList[0].Invoke();
+            for (int i = 0; i < particles.Length; i++)
+                Render.Children.Add(particles[i]);
+            ParticlesCounter.Text = Convert.ToString(particles.Length);
+
             collisionSystem = new EventDrivenCollisionSystem(particles, quantaTime);
+
+            Time.Start();
         }
 
         private void Update(object sender, EventArgs e)
@@ -129,7 +142,30 @@ namespace SimulationWindow
             totalTimeElapsed += deltaTime;
         }
 
+        /// <summary>
+        /// Resets the entire simulation to a point where no particles are on a scene.
+        /// </summary>
+        private void ResetSimulation()
+        {
+            Time.Stop();
+            TimeButton.Content = "Start Time";
+
+            p1 = null;
+            p2 = null;
+            ShowHideParticlesUI();
+
+            totalTimeElapsed = TimeSpan.Zero;
+            UpdateCollisionsPerSecond();
+
+            for (int i = 0; i < particles.Length; i++)
+                Render.Children.Remove(particles[i]);
+
+            particles = null;
+            collisionSystem = null;
+        }
+
         #region Update UI Elements
+
         /// <summary>
         /// Shows or hides particle statistics along with the distance between the two.
         /// </summary>
@@ -143,6 +179,8 @@ namespace SimulationWindow
                 vectorVelp1.Visibility = Visibility.Visible;
                 vectorVelp1Right.Visibility = Visibility.Visible;
                 vectorVelp1Left.Visibility = Visibility.Visible;
+
+                PStats.Visibility = Visibility.Hidden;
             }
             else
             {
@@ -152,6 +190,8 @@ namespace SimulationWindow
                 vectorVelp1.Visibility = Visibility.Hidden;
                 vectorVelp1Right.Visibility = Visibility.Hidden;
                 vectorVelp1Left.Visibility = Visibility.Hidden;
+
+                PStats.Visibility = Visibility.Visible;
             }
 
             if (p2 != null)
@@ -261,7 +301,7 @@ namespace SimulationWindow
             {
                 Vector2 p1Normalized = p1.velocity;
                 p1Normalized.Normalize();
-                p1Normalized *= (p1.radius + 20);
+                p1Normalized *= (p1.radius + 21);
 
                 //main line
                 vectorVelp1.X1 = p1.position.x; vectorVelp1.Y1 = p1.position.y;
@@ -284,7 +324,7 @@ namespace SimulationWindow
             {
                 Vector2 p2Normalized = p2.velocity;
                 p2Normalized.Normalize();
-                p2Normalized *= (p2.radius + 20);
+                p2Normalized *= (p2.radius + 21);
 
                 //main line
                 vectorVelp2.X1 = p2.position.x; vectorVelp2.Y1 = p2.position.y;
@@ -302,153 +342,12 @@ namespace SimulationWindow
                 vectorVelp2Left.X1 = vectorVelp2.X2; vectorVelp2Left.Y1 = vectorVelp2.Y2;
                 vectorVelp2Left.X2 = leftVector.x; vectorVelp2Left.Y2 = leftVector.y;
             }
-
-            //Vector2 particleNormalized = particle.velocity;
-            //particleNormalized.Normalize();
-            //particleNormalized *= (particle.radius + 20);
-
-            //Line main = new Line()
-            //{
-            //    StrokeThickness = 2,
-            //    Stroke = transparentToRed,
-            //    X1 = particle.position.x,
-            //    Y1 = particle.position.y,
-            //    X2 = particle.position.x + particleNormalized.x,
-            //    Y2 = particle.position.y + particleNormalized.y
-            //};
-
-            //particleNormalized *= 0.2;
-            //Vector2 leftV = new Vector2(main.X2 - particleNormalized.y - particleNormalized.x, main.Y2 + particleNormalized.x - particleNormalized.y);
-            //Vector2 rightV = new Vector2(main.X2 + particleNormalized.y - particleNormalized.x, main.Y2 - particleNormalized.x - particleNormalized.y);
-
-            //Line left = new Line()
-            //{
-            //    Stroke = red,
-            //    StrokeThickness = 2,
-            //    X1 = main.X2,
-            //    Y1 = main.Y2,
-
-            //    X2 = leftV.x,
-            //    Y2 = leftV.y
-            //};
-
-            //Line right = new Line()
-            //{
-            //    Stroke = red,
-            //    StrokeThickness = 2,
-            //    X1 = main.X2,
-            //    Y1 = main.Y2,
-
-            //    X2 = rightV.x,
-            //    Y2 = rightV.y
-            //};
-
-            //Render.Children.Add(main);
-            //Render.Children.Add(left);
-            //Render.Children.Add(right);
         }
 
         /// <summary>
         /// Calculates and displays collisions per second.
         /// </summary>
         private void UpdateCollisionsPerSecond() => CollisionsCounter.Text = (collisionSystem.CollisionCounter / totalTimeElapsed.TotalSeconds).ToString("00.00");
-        #endregion
-
-        #region Simulations
-
-        /// <summary>
-        /// Resets the entire simulation to a point where no particles are on a scene.
-        /// </summary>
-        private void ResetSimulation()
-        {
-            Time.Stop();
-            TimeButton.Content = "Start Time";
-
-            p1 = null;
-            p2 = null;
-            ShowHideParticlesUI();
-
-            totalTimeElapsed = TimeSpan.Zero;
-            UpdateCollisionsPerSecond();
-
-            for (int i = 0; i < particles.Length; i++)
-                Render.Children.Remove(particles[i]);
-
-            particles = null;
-            collisionSystem = null;
-        }
-
-        /// <summary>
-        /// Initializes one big and lots of small particles with increased velocity.
-        /// </summary>
-        /// <returns></returns>
-        private Particle[] BrownianMotion()
-        {
-            Particle[] particles = new Particle[240];
-
-            //Spawn each n-th position
-            double x = 0;
-            double y = 6;
-
-            //Position randomly off the center
-            int randomOffSet = 0;
-
-            //Position particles
-            for (int i = 0; i < particles.Length; i++)
-            {
-                if (i % 40 == 0)
-                {
-                    y += 12;
-                    x = 18;
-                }
-                Vector2 position = new Vector2(x + rnd.Next(-randomOffSet, randomOffSet), y + rnd.Next(-randomOffSet, randomOffSet));
-                Vector2 velocity = new Vector2(rnd.Next(0, 2) * 2 - 1 * rnd.NextDouble() * 2, rnd.Next(0, 2) * 2 - 1 * rnd.NextDouble() * 2);
-                particles[i] = new Particle(position, velocity, 3, 1) { Fill = blue, Stroke = blue, StrokeThickness = 2 };
-                Render.Children.Add(particles[i]);
-
-                x += 12;
-            }
-
-            //Big one
-            particles[100] = new Particle(new Vector2(250, 250), new Vector2(rnd.Next(0, 2) * 2 - 1 * rnd.NextDouble(), rnd.Next(0, 2) * 2 - 1 * rnd.NextDouble()), 26, 10) { Fill = yellow };
-            Render.Children.Remove(particles[100]);
-            Render.Children.Add(particles[100]);
-
-            ParticlesCounter.Text = Convert.ToString(particles.Length);
-            return particles;
-        }
-
-        private Particle[] IntializeParticles(int amountToSpawn)
-        {
-            //Max 1600
-            Particle[] particles = new Particle[amountToSpawn];
-
-            //Spawn each n-th position
-            double x = 0;
-            double y = 6;
-
-            //Position randomly off the center, max 16
-            int randomOffSet = 0;
-
-            //Position particles
-            for (int i = 0; i < particles.Length; i++)
-            {
-                if (i % 40 == 0)
-                {
-                    y += 12;
-                    x = 18;
-                }
-                Vector2 position = new Vector2(x + rnd.Next(-randomOffSet, randomOffSet), y + rnd.Next(-randomOffSet, randomOffSet));
-                Vector2 velocity = new Vector2(rnd.Next(0, 2) * 2 - 1 * rnd.NextDouble() * 1, rnd.Next(0, 2) * 2 - 1 * rnd.NextDouble() * 1);
-                particles[i] = new Particle(position, velocity, 2, 1) { Fill = blue, Stroke = blue, StrokeThickness = 2 };
-                Render.Children.Add(particles[i]);
-
-                x += 12;
-            }
-
-            ParticlesCounter.Text = Convert.ToString(particles.Length);
-            return particles;
-        }
 
         #endregion
 
@@ -473,12 +372,20 @@ namespace SimulationWindow
             }
         }
 
-        private void NextButton_Click(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Reads whatever the user picks within the combo box and generates specific simulation.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Generate_Click(object sender, RoutedEventArgs e)
         {
             ResetSimulation();
 
+            particles = simulationsList[PickSimulationCB.SelectedIndex].Invoke();
+            for (int i = 0; i < particles.Length; i++)
+                Render.Children.Add(particles[i]);
+            ParticlesCounter.Text = Convert.ToString(particles.Length);
 
-            particles = BrownianMotion();
             collisionSystem = new EventDrivenCollisionSystem(particles, quantaTime);
         }
 

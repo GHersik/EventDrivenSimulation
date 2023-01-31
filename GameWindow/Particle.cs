@@ -148,7 +148,6 @@ namespace SimulationWindow
             return -(deltaPosdeltaVel + Math.Sqrt(distance)) / deltaVelS;
         }
 
-
         /// <summary>
         /// Calculates time of collision with a vertical wall.
         /// </summary>

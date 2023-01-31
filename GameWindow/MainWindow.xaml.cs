@@ -100,19 +100,15 @@ namespace SimulationWindow
             Time.Tick += Update;
             Time.Interval = deltaTime;
 
-            //List of available simulations
+            //List of available simulations in order as it is within the combo box UI.
             simulationsList.Add(Simulations.Ambient);
             simulationsList.Add(Simulations.BrownianMotion);
             simulationsList.Add(Simulations.FastParticles);
+            simulationsList.Add(Simulations.BilliardSample);
+            simulationsList.Add(Simulations.Particles1600);
 
             //Intialize program
-            particles = simulationsList[0].Invoke();
-            for (int i = 0; i < particles.Length; i++)
-                Render.Children.Add(particles[i]);
-            ParticlesCounter.Text = Convert.ToString(particles.Length);
-
-            collisionSystem = new EventDrivenCollisionSystem(particles, quantaTime);
-
+            Generate(0);
             Time.Start();
         }
 
@@ -162,6 +158,20 @@ namespace SimulationWindow
 
             particles = null;
             collisionSystem = null;
+        }
+
+        /// <summary>
+        /// Generates particles according to the index on the list of available simulations
+        /// and adds those to the render along with updating UI on how many particles there are on the scene.
+        /// </summary>
+        private void Generate(int index)
+        {
+            particles = simulationsList[index].Invoke();
+            for (int i = 0; i < particles.Length; i++)
+                Render.Children.Add(particles[i]);
+            ParticlesCounter.Text = Convert.ToString(particles.Length);
+
+            collisionSystem = new EventDrivenCollisionSystem(particles, quantaTime);
         }
 
         #region Update UI Elements
@@ -380,13 +390,7 @@ namespace SimulationWindow
         private void Generate_Click(object sender, RoutedEventArgs e)
         {
             ResetSimulation();
-
-            particles = simulationsList[PickSimulationCB.SelectedIndex].Invoke();
-            for (int i = 0; i < particles.Length; i++)
-                Render.Children.Add(particles[i]);
-            ParticlesCounter.Text = Convert.ToString(particles.Length);
-
-            collisionSystem = new EventDrivenCollisionSystem(particles, quantaTime);
+            Generate(PickSimulationCB.SelectedIndex);
         }
 
         #endregion

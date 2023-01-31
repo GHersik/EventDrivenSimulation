@@ -9,6 +9,7 @@ namespace SimulationRender
 {
     /// <summary>
     /// Collision based system which uses Priority Queue at it's core to store every future collision between every particle and wall on a scene.
+    /// As of this moment the collision based system always has to have at least one moving particle.
     /// </summary>
     public class EventDrivenCollisionSystem
     {
@@ -70,15 +71,19 @@ namespace SimulationRender
         }
 
         /// <summary>
-        /// Calculates time of another collision on the queue.
+        /// Calculates time of another collision on the queue, if given particles have no velocity then we dequeue an event with no collision time.
         /// </summary>
         public void CalculateNextCollision()
         {
-            while (!collisionQueue.Peek().isValid())
-                collisionQueue.Dequeue();
+            while (true)
+            {
+                Event Peek = collisionQueue.Peek();
+                if (!Peek.isValid() || Peek.time is double.NaN) { collisionQueue.Dequeue(); continue; }
 
-            time = collisionQueue.Peek().time;
-            nextCollsion = TimeSpan.FromMilliseconds(time * quantaTime);
+                time = collisionQueue.Peek().time;
+                nextCollsion = TimeSpan.FromMilliseconds(time * quantaTime);
+                break;
+            }
         }
 
         /// <summary>

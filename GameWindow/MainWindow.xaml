@@ -309,7 +309,7 @@
         <Rectangle Name="Simulationborder" Width="504" Height="504" Canvas.Left="-2" StrokeThickness="3" Stroke="#FF4D96FF" Canvas.Top="-2" HorizontalAlignment="Left" VerticalAlignment="Top"/>
         <TextBlock Name="canvasMatrixTop" FontSize="15" Foreground="#FF4D96FF"  FontWeight="bold"   Canvas.Top="-22" TextAlignment="Center" Canvas.Left="-12" TextWrapping="WrapWithOverflow" Height="21" Width="48" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Roboto Mono"><Run Language="pl-pl" Text="(0, 0)"/></TextBlock>
         <TextBlock FontSize="15" Foreground="#FF4D96FF"  FontWeight="bold"   Canvas.Top="505" TextAlignment="Center" Canvas.Left="428" TextWrapping="WrapWithOverflow" Height="21" Width="86" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Roboto Mono"><Run Language="pl-pl" Text="(500, 500)"/></TextBlock>
-        <TextBlock FontSize="15" Foreground="#FF4D96FF"  FontWeight="bold"   Canvas.Top="517" TextAlignment="Center" Canvas.Left="186" TextWrapping="WrapWithOverflow" Height="20" Width="146" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Roboto Mono"><Run Language="pl-pl" Text="Pick a simulaton"/></TextBlock>
+        <TextBlock FontSize="14" Foreground="White"  FontWeight="bold"   Canvas.Top="517" TextAlignment="Center" Canvas.Left="186" TextWrapping="WrapWithOverflow" Height="20" Width="146" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Roboto Mono"><Run Language="pl-pl" Text="Pick a simulaton"/></TextBlock>
         <TextBlock Name="PStats" FontSize="15" Foreground="#FFFFD93D"  FontWeight="bold"   Canvas.Top="30" Canvas.Left="-316" TextWrapping="WrapWithOverflow" Height="74" Width="262" HorizontalAlignment="Center" VerticalAlignment="Top" FontFamily="Roboto Mono" TextAlignment="Center"><Run Language="pl-pl" Text="You can stop time and right or left click with your mouse to track a specific particle, or you can try and catch it on the run."/></TextBlock>
 
         <!--Particle p1-->
@@ -402,6 +402,16 @@
             <ComboBoxItem Background="#FF4D96FF" BorderBrush="#FF4D96FF" Foreground="#FF4D96FF" OpacityMask="#FF4D96FF">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Foreground="White">Fast Particles</TextBlock>
+                </StackPanel>
+            </ComboBoxItem>
+            <ComboBoxItem Background="#FF4D96FF" BorderBrush="#FF4D96FF" Foreground="#FF4D96FF" OpacityMask="#FF4D96FF">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Foreground="White">Billiard Sample</TextBlock>
+                </StackPanel>
+            </ComboBoxItem>
+            <ComboBoxItem Background="#FF4D96FF" BorderBrush="#FF4D96FF" Foreground="#FF4D96FF" OpacityMask="#FF4D96FF">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Foreground="White">1600 Particles</TextBlock>
                 </StackPanel>
             </ComboBoxItem>
         </ComboBox>

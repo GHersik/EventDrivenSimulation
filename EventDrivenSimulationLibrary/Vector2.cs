@@ -79,3 +79,12 @@ namespace EventDrivenSimulationLibrary
         public static Vector2 operator /(Vector2 vectorToDivide, double scalar) => new Vector2(vectorToDivide.x / scalar, vectorToDivide.y / scalar);
     }
 }
+
+/***************************************************************************************
+*    Title: <EventDrivenSimulation>
+*    Author: <Gregory Werner>
+*    Date: <16.04.2023>
+*    Code version: <1.0.0>
+*    Availability: <https://github.com/GHersik/EventDrivenSimulation>
+*
+***************************************************************************************/

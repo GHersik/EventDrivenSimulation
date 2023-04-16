@@ -385,7 +385,7 @@
         <!--TimeButton-->
         <Button Click="TimeButton_Click" Name="TimeButton" Canvas.Left="66" Canvas.Top="542" Width="120" Height="22" Background="#FF4D96FF" BorderBrush="#FF4D96FF" Cursor="Hand" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White" FontWeight="Bold" >Stop Time
         </Button>
-        <Button Click="Generate_Click" Name="GenerateButton" Canvas.Left="332" Canvas.Top="542" Width="100" Height="22" Background="#FF4D96FF" BorderBrush="#FF4D96FF" Cursor="Hand" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White" FontWeight="Bold" >Generate
+        <Button Click="Generate_Click" Name="GenerateButton" Canvas.Left="332" Canvas.Top="542" Width="120" Height="22" Background="#FF4D96FF" BorderBrush="#FF4D96FF" Cursor="Hand" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="White" FontWeight="Bold" >Generate
         </Button>
         <!--Pick a simulation-->
         <ComboBox Name="PickSimulationCB" Style="{DynamicResource ComboBoxEventDrivenSimulation}" Canvas.Left="191" Canvas.Top="542" HorizontalAlignment="Left" VerticalAlignment="Center" Width="136" Background="#FF4D96FF" BorderBrush="#FF4D96FF" Foreground="#FF4D96FF" BorderThickness="0,0,0,0" OpacityMask="#FF4D96FF" SelectedIndex="0" FontWeight="Bold" Panel.ZIndex="2">
@@ -417,3 +417,19 @@
         </ComboBox>
     </Canvas>
 </Window>
+
+<!--
+/***************************************************************************************
+*    Title:
+<EventDrivenSimulation>
+    *    Author:
+    <Gregory Werner>
+        *    Date:
+        <16.04.2023>
+            *    Code version:
+            <1.0.0>
+                *    Availability:
+                <https://github.com/GHersik/EventDrivenSimulation>
+                *
+***************************************************************************************/
+-->

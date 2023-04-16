@@ -1,10 +1,5 @@
 ﻿using SimulationWindow;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace SimulationRender
@@ -140,7 +135,6 @@ namespace SimulationRender
             }
 
             //The bill to end them all
-            int randomOffSet = 1;
             Vector2 positionx = new Vector2(250, 440);
             Vector2 velocityx = new Vector2(rnd.Next(0, 2) - 1 * rnd.NextDouble(), rnd.Next(8, 15) * -1);
             particles[0] = new Particle(positionx, velocityx, 10, 1) { Fill = blue, Stroke = blue, StrokeThickness = 2 };
@@ -178,3 +172,12 @@ namespace SimulationRender
         }
     }
 }
+
+/***************************************************************************************
+*    Title: <EventDrivenSimulation>
+*    Author: <Gregory Werner>
+*    Date: <16.04.2023>
+*    Code version: <1.0.0>
+*    Availability: <https://github.com/GHersik/EventDrivenSimulation>
+*
+***************************************************************************************/

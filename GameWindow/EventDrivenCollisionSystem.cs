@@ -1,9 +1,6 @@
 ﻿using SimulationWindow;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimulationRender
 {
@@ -38,8 +35,16 @@ namespace SimulationRender
             this.quantaTime = quantaTime;
             nextCollsion = TimeSpan.Zero;
 
+            //***************************************************************************************
+            //*    Title: <Event-Driven Simulation>
+            //*    Author: <Robert Sedgewick and Kevin Wayne>
+            //*    Date: <2000-2019>
+            //*    Availability: <https://algs4.cs.princeton.edu/61event/>
+
             for (int i = 0; i < particles.Length; i++)
                 PredictCollisions(particles[i]);
+
+            //***************************************************************************************
 
             CalculateNextCollision();
         }
@@ -52,6 +57,12 @@ namespace SimulationRender
         /// <param name="p1">Particle to be evaluated</param>
         private void PredictCollisions(Particle p1)
         {
+            //***************************************************************************************
+            //*    Title: <Event-Driven Simulation>
+            //*    Author: <Robert Sedgewick and Kevin Wayne>
+            //*    Date: <2000-2019>
+            //*    Availability: <https://algs4.cs.princeton.edu/61event/>
+
             if (p1 == null) return;
 
             for (int i = 0; i < particles.Length; i++)
@@ -68,6 +79,8 @@ namespace SimulationRender
             double deltaTimeHWall = time + p1.timeToHitHorizontalWall();
             if (deltaTimeHWall != double.PositiveInfinity)
                 collisionQueue.Enqueue(new Event(deltaTimeHWall, null, p1), deltaTimeHWall);
+
+            //***************************************************************************************
         }
 
         /// <summary>
@@ -80,7 +93,7 @@ namespace SimulationRender
                 Event Peek = collisionQueue.Peek();
                 if (!Peek.isValid() || Peek.time is double.NaN) { collisionQueue.Dequeue(); continue; }
 
-                time = collisionQueue.Peek().time;
+                time = Peek.time;
                 nextCollsion = TimeSpan.FromMilliseconds(time * quantaTime);
                 break;
             }
@@ -136,12 +149,29 @@ namespace SimulationRender
         /// <param name="collision">Specific collision that occured</param>
         private void ResolveCollision(Event collision)
         {
+            //***************************************************************************************
+            //*    Title: <Event-Driven Simulation>
+            //*    Author: <Robert Sedgewick and Kevin Wayne>
+            //*    Date: <2000-2019>
+            //*    Availability: <https://algs4.cs.princeton.edu/61event/>
+
             if (collision.p1 != null && collision.p2 != null)
                 collision.p1.ParticleCollision(collision.p2);
             else if (collision.p1 != null && collision.p2 == null)
                 collision.p1.VerticalWallCollision();
             else if (collision.p1 == null && collision.p2 != null)
                 collision.p2.HorizontalWallCollision();
+
+            //***************************************************************************************
         }
     }
 }
+
+/***************************************************************************************
+*    Title: <EventDrivenSimulation>
+*    Author: <Gregory Werner>
+*    Date: <16.04.2023>
+*    Code version: <1.0.0>
+*    Availability: <https://github.com/GHersik/EventDrivenSimulation>
+*
+***************************************************************************************/

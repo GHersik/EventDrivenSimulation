@@ -1,22 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Media.Animation;
-using System.Windows.Threading;
-using System.Windows.Ink;
-using System.Reflection;
-using EventDrivenSimulationLibrary;
 
 namespace SimulationWindow
 {
@@ -102,6 +87,12 @@ namespace SimulationWindow
         /// <param name="p2">Particle to collide with.</param>
         public void ParticleCollision(Particle p2)
         {
+            //***************************************************************************************
+            //*    Title: <Event-Driven Simulation>
+            //*    Author: <Robert Sedgewick and Kevin Wayne>
+            //*    Date: <2000-2019>
+            //*    Availability: <https://algs4.cs.princeton.edu/61event/>
+
             //Calculate Impulse
             Vector2 relativePos = p2.position - this.position;
             Vector2 relativeVel = p2.velocity - this.velocity;
@@ -117,6 +108,8 @@ namespace SimulationWindow
 
             this.count++;
             p2.count++;
+
+            //***************************************************************************************
         }
 
         #endregion
@@ -130,6 +123,12 @@ namespace SimulationWindow
         /// <returns>Time of collision between two particles</returns>
         public double timeToHitParticle(Particle p1)
         {
+            //***************************************************************************************
+            //*    Title: <Event-Driven Simulation>
+            //*    Author: <Robert Sedgewick and Kevin Wayne>
+            //*    Date: <2000-2019>
+            //*    Availability: <https://algs4.cs.princeton.edu/61event/>
+
             if (this.Equals(p1)) return double.PositiveInfinity;
 
             Vector2 relativePosition = this.position - p1.position;
@@ -146,6 +145,8 @@ namespace SimulationWindow
             if (distance < 0) return double.PositiveInfinity;
 
             return -(deltaPosdeltaVel + Math.Sqrt(distance)) / deltaVelS;
+
+            //***************************************************************************************
         }
 
         /// <summary>
@@ -179,3 +180,12 @@ namespace SimulationWindow
         #endregion
     }
 }
+
+/***************************************************************************************
+*    Title: <EventDrivenSimulation>
+*    Author: <Gregory Werner>
+*    Date: <16.04.2023>
+*    Code version: <1.0.0>
+*    Availability: <https://github.com/GHersik/EventDrivenSimulation>
+*
+***************************************************************************************/

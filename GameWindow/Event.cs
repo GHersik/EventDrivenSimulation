@@ -1,9 +1,4 @@
 ﻿using SimulationWindow;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimulationRender
 {
@@ -40,3 +35,11 @@ namespace SimulationRender
         }
     }
 }
+
+//***************************************************************************************
+//*    Title: <Event-Driven Simulation>
+//*    Author: <Robert Sedgewick and Kevin Wayne>
+//*    Date: <2000-2019>
+//*    Availability: <https://algs4.cs.princeton.edu/61event/>
+//*
+//***************************************************************************************

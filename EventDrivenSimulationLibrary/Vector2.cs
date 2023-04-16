@@ -55,7 +55,7 @@ namespace EventDrivenSimulationLibrary
         public static Vector2 operator +(Vector2 a, Vector2 b) => new Vector2(a.x + b.x, a.y + b.y);
 
         /// <summary>
-        /// Subtracts two vectors from each one another.
+        /// Subtracts two vectors from one another.
         /// </summary>
         /// <param name="a">Vector to subtract from.</param>
         /// <param name="b">Vector being subtracted by.</param>
